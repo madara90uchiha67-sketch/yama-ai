@@ -1,0 +1,80 @@
+// Base de datos de YAMA AI. Funciona con cualquier Postgres
+// (recomendado: Supabase o Vercel Postgres, ambos con capa gratuita).
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String
+  createdAt     DateTime  @default(now())
+
+  plan          Plan      @default(FREE)
+  stripeCustomerId       String?  @unique
+  stripeSubscriptionId   String?  @unique
+  stripeCurrentPeriodEnd DateTime?
+
+  // Memoria inteligente (persiste en la nube, entre dispositivos)
+  brand         String?
+  audience      String?
+  style         String?
+  notes         MemoryNote[]
+
+  // Preferencias del producto (ej. tono con groserías)
+  allowProfanity Boolean  @default(false)
+
+  conversations Conversation[]
+  usageLogs     UsageLog[]
+}
+
+enum Plan {
+  FREE
+  PRO
+}
+
+model MemoryNote {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  mode      String    @default("free") // idea | story | content | free
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  messages  Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  role           String       // user | assistant
+  content        String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+}
+
+// Un registro por día por usuario, para limitar el uso sin llamar
+// constantemente a la IA para "contar" — se lee/incrementa en cada request.
+model UsageLog {
+  id           String   @id @default(cuid())
+  date         String   // formato YYYY-MM-DD (UTC)
+  messageCount Int      @default(0)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+
+  @@unique([userId, date])
+}
