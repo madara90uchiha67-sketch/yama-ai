@@ -1,4 +1,4 @@
-const MODEL = "claude-sonnet-4-6";
+const MODELO = "claude-sonnet-4-6";
 
 export async function callAnthropic({
   system,
