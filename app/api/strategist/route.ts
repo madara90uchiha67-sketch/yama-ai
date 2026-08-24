@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
   let raw: string;
   try {
-    raw = await callAnthropic({
+    raw = await callAI({
       system,
       messages: [{ role: "user", content: input }],
       maxTokens: 900,
