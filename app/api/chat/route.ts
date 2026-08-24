@@ -78,7 +78,7 @@ export async function POST(req: Request) {
 
   let reply: string;
   try {
-    reply = await callGemini({
+    reply = await callAI({
       system,
       messages: nextMessages,
       maxTokens: limits.maxTokensPerReply,
