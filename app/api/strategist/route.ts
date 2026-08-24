@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { PLAN_LIMITS, todayKey } from "@/lib/plans";
-import { callAnthropic, SYSTEM_BASE, buildMemoryBlock, buildToneBlock } from "@/lib/anthropic";
+import { callAI( SYSTEM_BASE, buildMemoryBlock, buildToneBlock } from "@/lib/anthropic";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
