@@ -1,4 +1,4 @@
-const MODELO = "gemini-2.0-flash";
+const MODELO = "gemini-2.5-flash";
 
 export async function callGemini({
   system,
