@@ -3,13 +3,13 @@
 export const PLAN_LIMITS = {
   FREE: {
     messagesPerDay: 15,
-    maxTokensPerReply: 500,
+    maxTokensPerReply: 900,
     memoryNotesLimit: 5,
     strategistPerDay: 2,
   },
   PRO: {
     messagesPerDay: 300,
-    maxTokensPerReply: 1200,
+    maxTokensPerReply: 1800,
     memoryNotesLimit: 200,
     strategistPerDay: 50,
   },
