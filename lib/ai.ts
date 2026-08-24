@@ -22,7 +22,11 @@ export async function callAI({
       body: JSON.stringify({
         system_instruction: { parts: [{ text: system }] },
         contents,
-        generationConfig: { maxOutputTokens: maxTokens, temperature: 0.9 },
+        generationConfig: {
+          maxOutputTokens: maxTokens,
+          temperature: 0.9,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       }),
     }
   );
