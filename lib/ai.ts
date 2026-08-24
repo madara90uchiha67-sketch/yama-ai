@@ -25,7 +25,7 @@ export async function callAI({
         generationConfig: {
           maxOutputTokens: maxTokens,
           temperature: 0.9,
-          thinkingConfig: { thinkingBudget: 0 },
+          thinkingConfig: { thinkingLevel: "low" },
         },
       }),
     }
