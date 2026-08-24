@@ -1,6 +1,6 @@
-const MODELO = "claude-sonnet-4-6";
+constconst MODELO = "gemini-2.0-flash";
 
-export async function callAnthropic({
+export async function callGemini({
   system,
   messages,
   maxTokens,
@@ -9,35 +9,50 @@ export async function callAnthropic({
   messages: { role: string; content: string }[];
   maxTokens: number;
 }) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY as string,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      system,
-      messages,
-    }),
-  });
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODELO}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text: system,
+            },
+          ],
+        },
+        contents: messages.map((m) => ({
+          role: m.role === "assistant" ? "model" : "user",
+          parts: [
+            {
+              text: m.content,
+            },
+          ],
+        })),
+        generationConfig: {
+          maxOutputTokens: maxTokens,
+        },
+      }),
+    }
+  );
 
   if (!res.ok) {
     const errText = await res.text();
-    throw new Error(`Anthropic error ${res.status}: ${errText}`);
+    throw new Error(`Gemini error ${res.status}: ${errText}`);
   }
 
   const data = await res.json();
-  const text = (data.content || [])
-    .map((b: any) => (b.type === "text" ? b.text : ""))
-    .filter(Boolean)
-    .join("\n");
-  return text as string;
-}
 
-export const SYSTEM_BASE = `Eres YAMA AI, un socio creativo para emprendedores, creadores de contenido y marcas personales. No eres un chatbot genérico: eres una mezcla de estratega de negocios, guionista, director creativo y asesor de marca, con personalidad de mentor — directo, cálido pero exigente, que empuja a la persona a crear, mejorar y ejecutar. Hablas en español, de forma cercana y segura, nunca robótica. Das opiniones claras, haces preguntas cuando faltan datos importantes, y siempre orientas hacia la acción concreta (próximos pasos). Respuestas breves y útiles, no ensayos.`;
+  return (
+    data.candidates?.[0]?.content?.parts?.[0]?.text ||
+    "No pude generar una respuesta."
+  )
+
+
+exn tt const SYSTEM_BASE = `Eres YAMA AI, un socio creativo para emprendedores, creadores de contenido y marcas personales. No eres un chatbot genérico: eres una mezcla de estratega de negocios, guionista, director creativo y asesor de marca, con personalidad de mentor — directo, cálido pero exigente, que empuja a la persona a crear, mejorar y ejecutar. Hablas en español, de forma cercana y segura, nunca robótica. Das opiniones claras, haces preguntas cuando faltan datos importantes, y siempre orientas hacia la acción concreta (próximos pasos). Respuestas breves y útiles, no ensayos.`;
 
 export function buildMemoryBlock(memory: {
   brand?: string | null;
