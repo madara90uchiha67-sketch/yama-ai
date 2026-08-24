@@ -84,7 +84,11 @@ export async function POST(req: Request) {
       maxTokens: limits.maxTokensPerReply,
     });
   } catch (e) {
-    return NextResponse.json({ error: "Falló la IA. Intenta de nuevo." }, { status: 502 });
+    console.error("YAMA AI /api/chat — fallo llamando a Gemini:", e);
+    return NextResponse.json(
+      { error: "Falló la IA. Intenta de nuevo.", debug: String(e) },
+      { status: 502 }
+    );
   }
 
   await prisma.$transaction([
