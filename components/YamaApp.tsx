@@ -155,7 +155,7 @@ function ChatView({ chatMode, plan }: any) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "Ocurrió un error.");
+        setError((data.error || "Ocurrió un error.") + (data.debug ? " — " + data.debug : ""));
         setMessages((m) => m.slice(0, -1));
         return;
       }
