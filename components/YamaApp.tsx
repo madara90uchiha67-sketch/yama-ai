@@ -244,32 +244,103 @@ function ChatView({ chatMode, plan }: any) {
   };
 
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-      <TopBar title={MODE_LABEL[chatMode] || "Chat con YAMA"} subtitle={plan === "FREE" ? "Plan gratuito" : "Plan Pro"} right={
-        <IconButton onClick={() => setSpeakOn((v) => !v)} label="Leer en voz alta" active={speakOn}>{speakOn ? <Volume2 size={16} /> : <VolumeX size={16} />}</IconButton>
-      } />
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, background: HOME_COLORS.bg }}>
+      <style>{`
+        @keyframes yama-chat-empty-in { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes yama-bubble-in { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes yama-think-dot { 0%,80%,100% { opacity: 0.25; transform: scale(0.85); } 40% { opacity: 1; transform: scale(1); } }
+      `}</style>
+
+      <div style={{ padding: "22px 20px 14px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: `1px solid ${HOME_COLORS.line}` }}>
+        <div>
+          <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: HOME_COLORS.muted, marginBottom: 4 }}>YAMA AI</div>
+          <div style={{ fontSize: 21, fontWeight: 500, fontFamily: serifFont, color: HOME_COLORS.ink }}>{MODE_LABEL[chatMode] || "Chat con YAMA"}</div>
+          <div style={{ fontFamily: sansFont, fontSize: 13, color: HOME_COLORS.muted, marginTop: 2 }}>{plan === "FREE" ? "Plan gratuito" : "Plan Pro"}</div>
+        </div>
+        <button onClick={() => setSpeakOn((v) => !v)} aria-label="Leer en voz alta" style={{ width: 38, height: 38, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: speakOn ? HOME_COLORS.ink : HOME_COLORS.surface, color: speakOn ? "#fff" : HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+          {speakOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
+        </button>
+      </div>
+
       {(micError || error) && (
-        <div style={{ margin: "0 18px 8px", padding: "9px 12px", borderRadius: 10, background: "#FBEFEC", color: "#8A3B2E", fontFamily: sansFont, fontSize: 12.5 }}>{micError || error}</div>
+        <div style={{ margin: "10px 18px 0", padding: "9px 12px", borderRadius: 10, background: "#F6E4DC", color: "#8A3B2E", fontFamily: sansFont, fontSize: 12.5 }}>{micError || error}</div>
       )}
-      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "6px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
+
+      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
         {messages.length === 0 && (
-          <div style={{ margin: "24px auto", textAlign: "center", color: COLORS.muted, fontFamily: sansFont, fontSize: 13, maxWidth: 260 }}>
-            <CoreOrb size={64} />
-            <div style={{ marginTop: 14 }}>Escribe o habla — YAMA piensa contigo.</div>
+          <div style={{ margin: "24px auto", textAlign: "center", color: HOME_COLORS.muted, fontFamily: sansFont, fontSize: 13, maxWidth: 320, animation: "yama-chat-empty-in 0.5s ease" }}>
+            <div style={{ position: "relative", display: "inline-block" }}>
+              <div style={{ position: "absolute", inset: -20, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,175,126,0.25) 0%, rgba(201,175,126,0) 70%)" }} />
+              <CoreOrb size={64} />
+            </div>
+            <div style={{ marginTop: 14, marginBottom: 18 }}>Escribe o habla — YAMA piensa contigo.</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+              {["Mejorar guion", "Crear ideas", "Hacerlo más viral", "Crear estrategia", "Crear una historia"].map((label) => (
+                <button
+                  key={label}
+                  onClick={() => send(label)}
+                  style={{ border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface, color: HOME_COLORS.ink, borderRadius: 20, padding: "8px 14px", fontFamily: sansFont, fontSize: 12.5, cursor: "pointer" }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         {messages.map((m, i) => (
-          <div key={i} style={{ alignSelf: m.role === "user" ? "flex-end" : "flex-start", maxWidth: "84%", background: m.role === "user" ? COLORS.ink : COLORS.surface, color: m.role === "user" ? "#fff" : COLORS.ink, border: m.role === "user" ? "none" : `1px solid ${COLORS.line}`, borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px", padding: "11px 14px", fontFamily: sansFont, fontSize: 14, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{m.content}</div>
+          <div
+            key={i}
+            style={{
+              alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+              maxWidth: "84%",
+              display: "flex",
+              gap: 8,
+              alignItems: "flex-end",
+              animation: "yama-bubble-in 0.3s ease",
+            }}
+          >
+            {m.role === "assistant" && (
+              <div style={{ flexShrink: 0, marginBottom: 2 }}>
+                <CoreOrb size={26} />
+              </div>
+            )}
+            <div
+              style={{
+                background: m.role === "user" ? HOME_COLORS.ink : HOME_COLORS.surface,
+                color: m.role === "user" ? "#FFF8EA" : HOME_COLORS.ink,
+                border: m.role === "user" ? "none" : `1px solid ${HOME_COLORS.line}`,
+                borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                padding: "11px 14px",
+                fontFamily: sansFont,
+                fontSize: 14,
+                lineHeight: 1.5,
+                whiteSpace: "pre-wrap",
+                boxShadow: m.role === "assistant" ? "0 2px 10px rgba(140,127,104,0.08)" : "none",
+              }}
+            >
+              {m.content}
+            </div>
+          </div>
         ))}
-        {loading && <div style={{ alignSelf: "flex-start", color: COLORS.muted, display: "flex", alignItems: "center", gap: 6, fontFamily: sansFont, fontSize: 12.5 }}><Loader2 size={14} style={{ animation: "yama-rotate 1s linear infinite" }} />YAMA está pensando…</div>}
+        {loading && (
+          <div style={{ alignSelf: "flex-start", display: "flex", gap: 8, alignItems: "center" }}>
+            <CoreOrb size={26} />
+            <div style={{ display: "flex", gap: 4, background: HOME_COLORS.surface, border: `1px solid ${HOME_COLORS.line}`, borderRadius: "16px 16px 16px 4px", padding: "12px 16px" }}>
+              {[0, 1, 2].map((i) => (
+                <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: HOME_COLORS.muted, animation: `yama-think-dot 1.2s ease-in-out ${i * 0.15}s infinite` }} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-      <div style={{ display: "flex", gap: 8, padding: "10px 14px calc(env(safe-area-inset-bottom, 0px) + 10px)", borderTop: `1px solid ${COLORS.line}`, background: COLORS.surface }}>
-        <button onClick={toggleListen} style={{ width: 42, height: 42, borderRadius: "50%", border: `1px solid ${COLORS.line}`, background: listening ? COLORS.ink : COLORS.bg, color: listening ? "#fff" : COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }} aria-label="Hablar">
+
+      <div style={{ display: "flex", gap: 8, padding: "10px 14px calc(env(safe-area-inset-bottom, 0px) + 10px)", borderTop: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface }}>
+        <button onClick={toggleListen} style={{ width: 42, height: 42, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: listening ? HOME_COLORS.ink : HOME_COLORS.bg, color: listening ? "#fff" : HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }} aria-label="Hablar">
           {listening ? <MicOff size={17} /> : <Mic size={17} />}
         </button>
         <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send(input)} placeholder="Escribe tu idea…"
-          style={{ flex: 1, border: `1px solid ${COLORS.line}`, borderRadius: 21, padding: "0 16px", fontFamily: sansFont, fontSize: 14, background: COLORS.bg }} />
-        <button onClick={() => send(input)} disabled={loading || !input.trim()} style={{ width: 42, height: 42, borderRadius: "50%", border: "none", background: COLORS.ink, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: loading || !input.trim() ? 0.4 : 1, flexShrink: 0 }} aria-label="Enviar">
+          style={{ flex: 1, border: `1px solid ${HOME_COLORS.line}`, borderRadius: 21, padding: "0 16px", fontFamily: sansFont, fontSize: 14, background: HOME_COLORS.bg, color: HOME_COLORS.ink }} />
+        <button onClick={() => send(input)} disabled={loading || !input.trim()} style={{ width: 42, height: 42, borderRadius: "50%", border: "none", background: HOME_COLORS.ink, color: "#FFF8EA", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: loading || !input.trim() ? 0.4 : 1, flexShrink: 0 }} aria-label="Enviar">
           <Send size={16} />
         </button>
       </div>
