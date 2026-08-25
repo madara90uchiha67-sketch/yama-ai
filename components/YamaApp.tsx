@@ -80,6 +80,15 @@ function BottomNav({ view, setView }: any) {
 }
 
 /* ---------------- HOME ---------------- */
+const HOME_COLORS = {
+  bg: "#F6EEE0",
+  surface: "#FFFBF3",
+  line: "#E4D8C3",
+  ink: "#241F18",
+  muted: "#8C7F68",
+  metallic: "linear-gradient(135deg, #E8D9B5, #FFF6E0, #C9AF7E)",
+};
+
 function HomeView({ setView, setChatMode, memory, plan, onUpgrade }: any) {
   const options = [
     { id: "content", icon: PenSquare, title: "Crear contenido", desc: "Guiones, ideas, edición y estrategia.", go: () => { setChatMode("content"); setView("chat"); } },
@@ -88,32 +97,67 @@ function HomeView({ setView, setChatMode, memory, plan, onUpgrade }: any) {
     { id: "brand", icon: Sparkles, title: "Mi marca", desc: "Construcción de identidad y branding.", go: () => setView("panel") },
   ];
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column", animation: "yama-home-in 0.5s ease" }}>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: HOME_COLORS.bg, animation: "yama-home-in 0.5s ease" }}>
       <style>{`
         @keyframes yama-home-in {
           0% { opacity: 0; transform: translateY(14px); }
           100% { opacity: 1; transform: translateY(0); }
         }
+        @keyframes yama-card-in {
+          0% { opacity: 0; transform: translateY(10px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        .yama-home-card {
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .yama-home-card:active {
+          transform: scale(0.97);
+          box-shadow: 0 2px 8px rgba(36,31,24,0.08);
+        }
       `}</style>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px 24px", textAlign: "center" }}>
-        <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: COLORS.muted, marginBottom: 22 }}>{memory?.brand || "YAMA AI"}</div>
-        <CoreOrb size={140} />
-        <div style={{ fontSize: 26, marginTop: 26, fontWeight: 500, fontFamily: serifFont }}>¿Qué vamos a crear hoy?</div>
+        <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: HOME_COLORS.muted, marginBottom: 22 }}>{memory?.brand || "YAMA AI"}</div>
+        <div style={{ position: "relative" }}>
+          <div style={{ position: "absolute", inset: -30, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,175,126,0.25) 0%, rgba(201,175,126,0) 70%)" }} />
+          <CoreOrb size={140} />
+        </div>
+        <div style={{ fontSize: 26, marginTop: 26, fontWeight: 500, fontFamily: serifFont, color: HOME_COLORS.ink }}>¿Qué vamos a crear hoy?</div>
+        <div style={{ width: 36, height: 2, borderRadius: 2, background: HOME_COLORS.metallic, marginTop: 12 }} />
         {plan === "FREE" && (
-          <button onClick={onUpgrade} style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 6, border: `1px solid ${COLORS.line}`, background: COLORS.surface, borderRadius: 20, padding: "8px 16px", fontFamily: sansFont, fontSize: 12.5, cursor: "pointer" }}>
+          <button onClick={onUpgrade} style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 6, border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface, borderRadius: 20, padding: "8px 16px", fontFamily: sansFont, fontSize: 12.5, cursor: "pointer", color: HOME_COLORS.ink }}>
             <Crown size={13} /> Mejorar a Pro
           </button>
         )}
       </div>
       <div style={{ padding: "0 16px 18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        {options.map((o) => {
+        {options.map((o, i) => {
           const Icon = o.icon;
           return (
-            <button key={o.id} onClick={o.go} style={{ textAlign: "left", background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: "16px 14px", cursor: "pointer", display: "flex", flexDirection: "column", gap: 10, fontFamily: sansFont }}>
-              <Icon size={19} strokeWidth={1.6} />
+            <button
+              key={o.id}
+              onClick={o.go}
+              className="yama-home-card"
+              style={{
+                textAlign: "left",
+                background: HOME_COLORS.surface,
+                border: `1px solid ${HOME_COLORS.line}`,
+                borderRadius: 18,
+                padding: "18px 15px",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                gap: 12,
+                fontFamily: sansFont,
+                boxShadow: "0 4px 14px rgba(140,127,104,0.10)",
+                animation: `yama-card-in 0.45s ease ${i * 0.08}s both`,
+              }}
+            >
+              <div style={{ width: 34, height: 34, borderRadius: "50%", background: HOME_COLORS.metallic, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Icon size={16} strokeWidth={1.8} color={HOME_COLORS.ink} />
+              </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, fontFamily: serifFont }}>{o.title}</div>
-                <div style={{ fontSize: 11.5, color: COLORS.muted, lineHeight: 1.4 }}>{o.desc}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, fontFamily: serifFont, color: HOME_COLORS.ink }}>{o.title}</div>
+                <div style={{ fontSize: 11.5, color: HOME_COLORS.muted, lineHeight: 1.4 }}>{o.desc}</div>
               </div>
             </button>
           );
@@ -121,7 +165,7 @@ function HomeView({ setView, setChatMode, memory, plan, onUpgrade }: any) {
       </div>
     </div>
   );
-      }
+}
 
 /* ---------------- CHAT ---------------- */
 const MODE_LABEL: Record<string, string> = { idea: "Pensar una idea", story: "Crear una historia", content: "Crear contenido", free: "Chat con YAMA" };
