@@ -103,25 +103,24 @@ function HomeView({ setView, setChatMode, memory, plan, onUpgrade }: any) {
           0% { opacity: 0; transform: translateY(14px); }
           100% { opacity: 1; transform: translateY(0); }
         }
-        @keyframes yama-card-in {
-          0% { opacity: 0; transform: translateY(10px); }
-          100% { opacity: 1; transform: translateY(0); }
+        @keyframes yama-row-in {
+          0% { opacity: 0; transform: translateX(-8px); }
+          100% { opacity: 1; transform: translateX(0); }
         }
-        .yama-home-card {
-          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        .yama-home-row {
+          transition: background 0.15s ease;
         }
-        .yama-home-card:active {
-          transform: scale(0.97);
-          box-shadow: 0 2px 8px rgba(36,31,24,0.08);
+        .yama-home-row:active {
+          background: rgba(140,127,104,0.08);
         }
       `}</style>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px 24px", textAlign: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 24px 30px", textAlign: "center" }}>
         <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: HOME_COLORS.muted, marginBottom: 22 }}>{memory?.brand || "YAMA AI"}</div>
         <div style={{ position: "relative" }}>
           <div style={{ position: "absolute", inset: -30, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,175,126,0.25) 0%, rgba(201,175,126,0) 70%)" }} />
-          <CoreOrb size={140} />
+          <CoreOrb size={120} />
         </div>
-        <div style={{ fontSize: 26, marginTop: 26, fontWeight: 500, fontFamily: serifFont, color: HOME_COLORS.ink }}>¿Qué vamos a crear hoy?</div>
+        <div style={{ fontSize: 24, marginTop: 24, fontWeight: 500, fontFamily: serifFont, color: HOME_COLORS.ink }}>¿Qué vamos a crear hoy?</div>
         <div style={{ width: 36, height: 2, borderRadius: 2, background: HOME_COLORS.metallic, marginTop: 12 }} />
         {plan === "FREE" && (
           <button onClick={onUpgrade} style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 6, border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface, borderRadius: 20, padding: "8px 16px", fontFamily: sansFont, fontSize: 12.5, cursor: "pointer", color: HOME_COLORS.ink }}>
@@ -129,39 +128,42 @@ function HomeView({ setView, setChatMode, memory, plan, onUpgrade }: any) {
           </button>
         )}
       </div>
-      <div style={{ padding: "0 16px 18px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-        {options.map((o, i) => {
-          const Icon = o.icon;
-          return (
-            <button
-              key={o.id}
-              onClick={o.go}
-              className="yama-home-card"
-              style={{
-                textAlign: "left",
-                background: HOME_COLORS.surface,
-                border: `1px solid ${HOME_COLORS.line}`,
-                borderRadius: 18,
-                padding: "18px 15px",
-                cursor: "pointer",
-                display: "flex",
-                flexDirection: "column",
-                gap: 12,
-                fontFamily: sansFont,
-                boxShadow: "0 4px 14px rgba(140,127,104,0.10)",
-                animation: `yama-card-in 0.45s ease ${i * 0.08}s both`,
-              }}
-            >
-              <div style={{ width: 34, height: 34, borderRadius: "50%", background: HOME_COLORS.metallic, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Icon size={16} strokeWidth={1.8} color={HOME_COLORS.ink} />
-              </div>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, fontFamily: serifFont, color: HOME_COLORS.ink }}>{o.title}</div>
-                <div style={{ fontSize: 11.5, color: HOME_COLORS.muted, lineHeight: 1.4 }}>{o.desc}</div>
-              </div>
-            </button>
-          );
-        })}
+      <div style={{ flex: 1, padding: "0 18px 24px" }}>
+        <div style={{ background: HOME_COLORS.surface, borderRadius: 18, border: `1px solid ${HOME_COLORS.line}`, overflow: "hidden", boxShadow: "0 4px 18px rgba(140,127,104,0.10)" }}>
+          {options.map((o, i) => {
+            const Icon = o.icon;
+            return (
+              <button
+                key={o.id}
+                onClick={o.go}
+                className="yama-home-row"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: "16px 16px",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: i < options.length - 1 ? `1px solid ${HOME_COLORS.line}` : "none",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  fontFamily: sansFont,
+                  animation: `yama-row-in 0.4s ease ${i * 0.07}s both`,
+                }}
+              >
+                <div style={{ width: 34, height: 34, borderRadius: "50%", background: HOME_COLORS.metallic, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Icon size={16} strokeWidth={1.8} color={HOME_COLORS.ink} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14.5, fontWeight: 600, fontFamily: serifFont, color: HOME_COLORS.ink }}>{o.title}</div>
+                  <div style={{ fontSize: 11.5, color: HOME_COLORS.muted, marginTop: 2 }}>{o.desc}</div>
+                </div>
+                <span style={{ color: HOME_COLORS.muted, fontSize: 18, flexShrink: 0 }}>→</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
