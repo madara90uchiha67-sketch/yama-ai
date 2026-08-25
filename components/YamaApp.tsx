@@ -373,23 +373,7 @@ if (status === "loading" || !memory) {
     </div>
   );
 }
-  >
-    <div
-      style={{
-        position: "absolute",
-        right: "-200px",
-        width: "500px",
-        height: "500px",
-        background: "radial-gradient(circle, white, transparent 70%)",
-        animation: "lightMove 2s ease forwards",
-      }}
-    />
-
-    <CoreOrb size={130} active />
-  </div>
-);
-}
-
+  
   return (
     <div style={{ fontFamily: serifFont, background: COLORS.bg, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
