@@ -82,17 +82,23 @@ function BottomNav({ view, setView }: any) {
 /* ---------------- HOME ---------------- */
 function HomeView({ setView, setChatMode, memory, plan, onUpgrade }: any) {
   const options = [
-    { id: "idea", icon: Brain, title: "Pensar una idea", desc: "Analiza oportunidades detrás de una idea.", go: () => { setChatMode("idea"); setView("chat"); } },
-    { id: "story", icon: Film, title: "Crear una historia", desc: "Convierte una idea en un guion.", go: () => { setChatMode("story"); setView("chat"); } },
-    { id: "strategy", icon: TrendingUp, title: "Crear estrategia", desc: "Diseña un plan paso a paso.", go: () => setView("strategist") },
-    { id: "content", icon: PenSquare, title: "Crear contenido", desc: "Genera publicaciones y videos.", go: () => { setChatMode("content"); setView("chat"); } },
+    { id: "content", icon: PenSquare, title: "Crear contenido", desc: "Guiones, ideas, edición y estrategia.", go: () => { setChatMode("content"); setView("chat"); } },
+    { id: "strategy", icon: TrendingUp, title: "Estrategia", desc: "Marketing, crecimiento y negocios.", go: () => setView("strategist") },
+    { id: "idea", icon: Lightbulb, title: "Ideas", desc: "Generación de oportunidades y conceptos.", go: () => { setChatMode("idea"); setView("chat"); } },
+    { id: "brand", icon: Sparkles, title: "Mi marca", desc: "Construcción de identidad y branding.", go: () => setView("panel") },
   ];
   return (
-    <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", animation: "yama-home-in 0.5s ease" }}>
+      <style>{`
+        @keyframes yama-home-in {
+          0% { opacity: 0; transform: translateY(14px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px 24px", textAlign: "center" }}>
         <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: COLORS.muted, marginBottom: 22 }}>{memory?.brand || "YAMA AI"}</div>
         <CoreOrb size={140} />
-        <div style={{ fontSize: 26, marginTop: 26, fontWeight: 500, fontFamily: serifFont }}>¿Qué vamos a construir hoy?</div>
+        <div style={{ fontSize: 26, marginTop: 26, fontWeight: 500, fontFamily: serifFont }}>¿Qué vamos a crear hoy?</div>
         {plan === "FREE" && (
           <button onClick={onUpgrade} style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 6, border: `1px solid ${COLORS.line}`, background: COLORS.surface, borderRadius: 20, padding: "8px 16px", fontFamily: sansFont, fontSize: 12.5, cursor: "pointer" }}>
             <Crown size={13} /> Mejorar a Pro
@@ -115,7 +121,7 @@ function HomeView({ setView, setChatMode, memory, plan, onUpgrade }: any) {
       </div>
     </div>
   );
-}
+      }
 
 /* ---------------- CHAT ---------------- */
 const MODE_LABEL: Record<string, string> = { idea: "Pensar una idea", story: "Crear una historia", content: "Crear contenido", free: "Chat con YAMA" };
