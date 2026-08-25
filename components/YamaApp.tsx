@@ -393,6 +393,7 @@ export default function YamaApp() {
     <CoreOrb size={130} active />
   </div>
 );
+}
 
   return (
     <div style={{ fontFamily: serifFont, background: COLORS.bg, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
