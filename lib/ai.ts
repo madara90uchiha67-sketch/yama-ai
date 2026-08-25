@@ -64,4 +64,27 @@ export function buildMemoryBlock(memory: {
 export function buildToneBlock(allowProfanity: boolean) {
   if (!allowProfanity) return "\n\nTono: cuida el lenguaje, sin groserías.";
   return "\n\nTono: el usuario activó explícitamente lenguaje crudo. Puedes usar groserías coloquiales en español cuando le den fuerza a un gancho o texto, con naturalidad y sin exagerar. Nunca insultes a personas reales ni uses lenguaje de odio o discriminatorio.";
-               }
+}
+
+// --- Memoria automática ---
+// Le pide a Gemini que detecte, en un mensaje del usuario, algo digno
+// de recordar a futuro (proyecto, preferencia, objetivo). Si no hay
+// nada relevante, devuelve null. Esta llamada NO cuenta como "mensaje"
+// del plan del usuario — es un análisis interno, invisible para él.
+export async function extractMemory(userMessage: string): Promise<string | null> {
+  const system = `Analizas un mensaje de un usuario de YAMA AI (app para emprendedores y creadores de contenido). Tu única tarea: decidir si el mensaje contiene algo importante para recordar a largo plazo sobre el usuario o su proyecto (ej. su marca, su nicho, su objetivo, una preferencia de estilo, una decisión que tomó). Ignora saludos, preguntas sueltas, o mensajes sin información nueva. Si hay algo que valga la pena recordar, responde con UNA sola frase corta y clara resumiendo ese dato, en tercera persona (ej. "Está lanzando una marca de ropa urbana enfocada en skaters"). Si NO hay nada que valga la pena recordar, responde exactamente: NADA`;
+
+  try {
+    const text = await callAI({
+      system,
+      messages: [{ role: "user", content: userMessage }],
+      maxTokens: 60,
+    });
+    const clean = text.trim();
+    if (!clean || clean.toUpperCase().startsWith("NADA")) return null;
+    return clean;
+  } catch (e) {
+    console.error("YAMA AI — fallo extrayendo memoria:", e);
+    return null; // si falla, simplemente no guardamos nada, no rompemos el chat
+  }
+}
