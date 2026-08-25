@@ -366,18 +366,13 @@ export default function YamaApp() {
     if (data.url) window.location.href = data.url;
   };
 
-  if (status === "loading" || !memory) {
-    return (
-  <div
-    style={{
-      minHeight: "100vh",
-      background: "#000",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      position: "relative",
-    }}
+if (status === "loading" || !memory) {
+  return (
+    <div style={{ minHeight: "100vh", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <CoreOrb size={48} active />
+    </div>
+  );
+}
   >
     <div
       style={{
