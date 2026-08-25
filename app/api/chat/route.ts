@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { PLAN_LIMITS, todayKey } from "@/lib/plans";
-import { callAI, SYSTEM_BASE, buildMemoryBlock, buildToneBlock } from "@/lib/ai";
+import { callAI, SYSTEM_BASE, buildMemoryBlock, buildToneBlock, extractMemory } from "@/lib/ai";
 
 const MODE_LABEL: Record<string, string> = {
   idea: "Pensar una idea",
@@ -103,6 +103,19 @@ export async function POST(req: Request) {
       data: { messageCount: { increment: 1 } },
     }),
   ]);
+
+  // --- Memoria automática (no cuenta como "mensaje" del plan) ---
+  // Se hace después de responder al usuario, para no retrasar el chat.
+  // Si falla, no afecta la respuesta que ya se envió.
+  extractMemory(content)
+    .then((fact) => {
+      if (fact) {
+        return prisma.memoryNote.create({
+          data: { userId, content: fact },
+        });
+      }
+    })
+    .catch((e) => console.error("YAMA AI — fallo guardando memoria automática:", e));
 
   return NextResponse.json({
     reply,
