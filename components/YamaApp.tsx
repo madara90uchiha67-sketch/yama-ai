@@ -368,11 +368,31 @@ export default function YamaApp() {
 
   if (status === "loading" || !memory) {
     return (
-      <div style={{ minHeight: "100vh", background: COLORS.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <CoreOrb size={90} active />
-      </div>
-    );
-  }
+  <div
+    style={{
+      minHeight: "100vh",
+      background: "#000",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      position: "relative",
+    }}
+  >
+    <div
+      style={{
+        position: "absolute",
+        right: "-200px",
+        width: "500px",
+        height: "500px",
+        background: "radial-gradient(circle, white, transparent 70%)",
+        animation: "lightMove 2s ease forwards",
+      }}
+    />
+
+    <CoreOrb size={130} active />
+  </div>
+);
 
   return (
     <div style={{ fontFamily: serifFont, background: COLORS.bg, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
