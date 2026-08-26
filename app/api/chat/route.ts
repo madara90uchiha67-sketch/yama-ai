@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { PLAN_LIMITS, todayKey } from "@/lib/plans";
-import { callAI, SYSTEM_BASE, buildMemoryBlock, buildToneBlock, extractMemory } from "@/lib/ai";
+import { callAI, SYSTEM_BASE, buildMemoryBlock, buildToneBlock, buildPersonalityBlock, extractMemory } from "@/lib/ai";
 
 const MODE_LABEL: Record<string, string> = {
   idea: "Pensar una idea",
@@ -74,7 +74,8 @@ export async function POST(req: Request) {
     SYSTEM_BASE +
     `\n\nModo actual: ${MODE_LABEL[mode] || "Chat libre"}` +
     buildMemoryBlock(user) +
-    buildToneBlock(user.allowProfanity);
+    buildPersonalityBlock(user.personality, user.speakingStyle) +
+    buildToneBlock(user.profanityLevel);
 
   let reply: string;
   try {
@@ -105,8 +106,6 @@ export async function POST(req: Request) {
   ]);
 
   // --- Memoria automática (no cuenta como "mensaje" del plan) ---
-  // Se hace después de responder al usuario, para no retrasar el chat.
-  // Si falla, no afecta la respuesta que ya se envió.
   extractMemory(content)
     .then((fact) => {
       if (fact) {
