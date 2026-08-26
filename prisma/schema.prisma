@@ -28,8 +28,11 @@ model User {
   style         String?
   notes         MemoryNote[]
 
-  // Preferencias del producto (ej. tono con groserías)
-  allowProfanity Boolean  @default(false)
+  // Preferencias del producto
+  profanityLevel String  @default("none") // none | soft | medium | high
+  personality    String? // profesional | directa | creativa | mentor | casual
+  speakingStyle  String? // formal | casual | personalizada
+  userProfile    String? // creador | emprendedor | marca | freelancer | estudiante
 
   conversations Conversation[]
   usageLogs     UsageLog[]
