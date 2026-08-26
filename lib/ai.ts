@@ -63,16 +63,41 @@ export function buildMemoryBlock(memory: {
   return `\n\nEsto es lo que sabes sobre el usuario y su proyecto (úsalo con naturalidad):\n${parts.join("\n")}`;
 }
 
-export function buildToneBlock(allowProfanity: boolean) {
-  if (!allowProfanity) return "\n\nTono: cuida el lenguaje, sin groserías.";
-  return "\n\nTono: el usuario activó explícitamente lenguaje crudo. Puedes usar groserías coloquiales en español cuando le den fuerza a un gancho o texto, con naturalidad y sin exagerar. Nunca insultes a personas reales ni uses lenguaje de odio o discriminatorio.";
+const PERSONALITY_TEXT: Record<string, string> = {
+  profesional: "Sé profesional y estructurado, con un tono serio pero cercano.",
+  directa: "Sé muy directo y al grano, sin rodeos, ve directo a la acción.",
+  creativa: "Sé muy creativo, propone ideas originales e inesperadas.",
+  mentor: "Sé un mentor exigente que empuja a la persona a mejorar y ejecutar.",
+  casual: "Sé relajado y casual, como hablando con un amigo cercano.",
+};
+
+const SPEAKING_TEXT: Record<string, string> = {
+  formal: "Usa un lenguaje formal, cuidando la gramática y evitando modismos.",
+  casual: "Usa un lenguaje casual, cercano, como en una conversación entre amigos.",
+  personalizada: "Adapta tu forma de hablar al estilo que use el usuario en sus mensajes.",
+};
+
+export function buildPersonalityBlock(personality?: string | null, speakingStyle?: string | null) {
+  const parts: string[] = [];
+  if (personality && PERSONALITY_TEXT[personality]) parts.push(PERSONALITY_TEXT[personality]);
+  if (speakingStyle && SPEAKING_TEXT[speakingStyle]) parts.push(SPEAKING_TEXT[speakingStyle]);
+  if (!parts.length) return "";
+  return `\n\nPersonalidad configurada por el usuario: ${parts.join(" ")}`;
+}
+
+const PROFANITY_TEXT: Record<string, string> = {
+  none: "Tono: cuida el lenguaje, sin groserías.",
+  soft: "Tono: el usuario permite groserías muy suaves y ocasionales, sin exagerar.",
+  medium: "Tono: el usuario permite groserías coloquiales en español con naturalidad, cuando le den fuerza a un gancho o texto.",
+  high: "Tono: el usuario permite lenguaje crudo y directo, con groserías frecuentes si el contexto lo pide.",
+};
+
+export function buildToneBlock(profanityLevel: string) {
+  const base = PROFANITY_TEXT[profanityLevel] || PROFANITY_TEXT.none;
+  return `\n\n${base} Nunca insultes a personas reales ni uses lenguaje de odio o discriminatorio, sin importar el nivel configurado.`;
 }
 
 // --- Memoria automática ---
-// Le pide a Gemini que detecte, en un mensaje del usuario, algo digno
-// de recordar a futuro (proyecto, preferencia, objetivo). Si no hay
-// nada relevante, devuelve null. Esta llamada NO cuenta como "mensaje"
-// del plan del usuario — es un análisis interno, invisible para él.
 export async function extractMemory(userMessage: string): Promise<string | null> {
   const system = `Analizas un mensaje de un usuario de YAMA AI (app para emprendedores y creadores de contenido). Tu única tarea: decidir si el mensaje contiene algo importante para recordar a largo plazo sobre el usuario o su proyecto (ej. su marca, su nicho, su objetivo, una preferencia de estilo, una decisión que tomó). Ignora saludos, preguntas sueltas, o mensajes sin información nueva. Si hay algo que valga la pena recordar, responde con UNA sola frase corta y clara resumiendo ese dato, en tercera persona (ej. "Está lanzando una marca de ropa urbana enfocada en skaters"). Si NO hay nada que valga la pena recordar, responde exactamente: NADA`;
 
@@ -87,6 +112,6 @@ export async function extractMemory(userMessage: string): Promise<string | null>
     return clean;
   } catch (e) {
     console.error("YAMA AI — fallo extrayendo memoria:", e);
-    return null; // si falla, simplemente no guardamos nada, no rompemos el chat
+    return null;
   }
 }
