@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   const system =
     SYSTEM_BASE +
     buildMemoryBlock(user) +
-    buildToneBlock(user.allowProfanity) +
+    buildToneBlock(user.profanityLevel) +
     `\n\nEstás en Modo Estratega. Responde ÚNICAMENTE con un objeto JSON válido, sin texto antes ni después, con esta forma exacta:
 {"problema": "...", "oportunidad": "...", "estrategia": "...", "proximos_pasos": ["...", "...", "..."]}`;
 
