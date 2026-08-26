@@ -4,6 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { PLAN_LIMITS } from "@/lib/plans";
 
+const VALID_PROFANITY = ["none", "soft", "medium", "high"];
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "No autenticado." }, { status: 401 });
@@ -19,7 +21,10 @@ export async function GET() {
     brand: user.brand,
     audience: user.audience,
     style: user.style,
-    allowProfanity: user.allowProfanity,
+    profanityLevel: user.profanityLevel,
+    personality: user.personality,
+    speakingStyle: user.speakingStyle,
+    userProfile: user.userProfile,
     plan: user.plan,
     notes: user.notes.map((n) => ({ id: n.id, content: n.content })),
   });
@@ -31,7 +36,11 @@ export async function PATCH(req: Request) {
   const userId = (session.user as any).id as string;
 
   const body = await req.json();
-  const { brand, audience, style, allowProfanity, addNote, removeNoteId } = body;
+  const { brand, audience, style, profanityLevel, addNote, removeNoteId } = body;
+
+  if (profanityLevel !== undefined && !VALID_PROFANITY.includes(profanityLevel)) {
+    return NextResponse.json({ error: "Nivel de lenguaje inválido." }, { status: 400 });
+  }
 
   const user = await prisma.user.findUnique({ where: { id: userId }, include: { notes: true } });
   if (!user) return NextResponse.json({ error: "Usuario no encontrado." }, { status: 404 });
@@ -57,9 +66,9 @@ export async function PATCH(req: Request) {
       ...(brand !== undefined ? { brand } : {}),
       ...(audience !== undefined ? { audience } : {}),
       ...(style !== undefined ? { style } : {}),
-      ...(allowProfanity !== undefined ? { allowProfanity } : {}),
+      ...(profanityLevel !== undefined ? { profanityLevel } : {}),
     },
   });
 
   return NextResponse.json({ ok: true });
-}
+  }
