@@ -395,5 +395,4 @@ function ChatView({ chatMode, plan, initialMessage, onInitialMessageSent }: any)
       )}
 
       <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
-  }
-        
+     
