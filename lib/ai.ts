@@ -115,3 +115,34 @@ export async function extractMemory(userMessage: string): Promise<string | null>
     return null;
   }
 }
+
+// --- Reto diario ---
+// Genera 20 sugerencias concretas de mejora, basadas en la memoria
+// guardada del usuario (su marca, nicho, notas). Se llama solo una
+// vez al día por usuario (el backend se encarga de cachear el resultado).
+export async function generateDailyChallenges(memory: {
+  brand?: string | null;
+  audience?: string | null;
+  style?: string | null;
+  notes: { content: string }[];
+}): Promise<string[]> {
+  const context = buildMemoryBlock(memory);
+  const system = `Eres YAMA AI. Basándote en lo que sabes del usuario y su proyecto, genera exactamente 20 sugerencias concretas y accionables para que mejore hoy — pueden ser de negocio (ej. dropshipping, ventas, marketing) o de contenido (ej. grabación, edición, guion, viralidad), según lo que sepas de su proyecto. Cada sugerencia debe ser corta (máximo 12 palabras), específica y accionable — no genérica. Responde ÚNICAMENTE con un array JSON de 20 strings, sin texto antes ni después, así: ["sugerencia 1", "sugerencia 2", ...]. Si no sabes nada del usuario todavía, da sugerencias generales útiles para cualquier creador o emprendedor que está empezando.`;
+
+  try {
+    const raw = await callAI({
+      system: system + context,
+      messages: [{ role: "user", content: "Genera mis 20 sugerencias de hoy." }],
+      maxTokens: 700,
+    });
+    const clean = raw.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(clean);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.slice(0, 20).map((s) => String(s));
+    }
+    return [];
+  } catch (e) {
+    console.error("YAMA AI — fallo generando reto diario:", e);
+    return [];
+  }
+}
