@@ -30,6 +30,11 @@ model User {
   speakingStyle  String?
   userProfile    String?
 
+  // Reto diario: 20 sugerencias generadas una vez al día,
+  // guardadas como texto (JSON) junto con la fecha de generación.
+  dailyChallenges     String?
+  dailyChallengesDate String?
+
   conversations Conversation[]
   usageLogs     UsageLog[]
 }
