@@ -792,15 +792,17 @@ export default function YamaApp() {
         {view === "strategist" && <StrategistView />}
         {view === "challenges" && <DailyChallengesView onSelect={goToChatWithMessage} />}
       </div>
-      <div style={{ display: "flex", justifyContent: "center", padding: "4px 0" }}>
-        <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ border: "none", background: "none", color: COLORS.muted, fontFamily: sansFont, fontSize: 11, display: "flex", alignItems: "center", gap: 4, cursor: "pointer", padding: 4 }}>
-          <LogOut size={11} /> Cerrar sesión
-        </button>
-      </div>
       <BottomNav view={view} setView={setView} />
 
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)}>
-        <PanelView memory={memory} refreshMemory={refreshMemory} plan={memory.plan} onUpgrade={upgrade} onDeleteAccount={deleteAccount} />
+        <PanelView
+          memory={memory}
+          refreshMemory={refreshMemory}
+          plan={memory.plan}
+          onUpgrade={upgrade}
+          onDeleteAccount={deleteAccount}
+          onLogout={() => signOut({ callbackUrl: "/login" })}
+        />
       </SettingsModal>
 
       <HistoryModal
@@ -814,5 +816,4 @@ export default function YamaApp() {
       />
     </div>
   );
-}
-
+}     
