@@ -188,3 +188,168 @@ function HistoryModal({ open, onClose, onSelectConversation }: any) {
     </div>
   );
 }
+
+/* ---------------- HOME ---------------- */
+const HOME_COLORS = {
+  bg: "#F6EEE0",
+  surface: "#FFFBF3",
+  line: "#E4D8C3",
+  ink: "#241F18",
+  muted: "#8C7F68",
+  metallic: "linear-gradient(135deg, #E8D9B5, #FFF6E0, #C9AF7E)",
+};
+
+function HomeView({ setView, setChatMode, memory, plan, onUpgrade, onOpenSettings }: any) {
+  const options = [
+    { id: "content", icon: PenSquare, title: "Crear contenido", desc: "Guiones, ideas, edición y estrategia.", go: () => { setChatMode("content"); setView("chat"); } },
+    { id: "strategy", icon: TrendingUp, title: "Estrategia", desc: "Marketing, crecimiento y negocios.", go: () => setView("strategist") },
+    { id: "idea", icon: Lightbulb, title: "Ideas", desc: "Generación de oportunidades y conceptos.", go: () => { setChatMode("idea"); setView("chat"); } },
+    { id: "challenge", icon: Flame, title: "Reto diario", desc: "20 sugerencias para mejorar hoy.", go: () => setView("challenges") },
+  ];
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: HOME_COLORS.bg, animation: "yama-home-in 0.5s ease", position: "relative" }}>
+      <style>{`
+        @keyframes yama-home-in {
+          0% { opacity: 0; transform: translateY(14px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes yama-row-in {
+          0% { opacity: 0; transform: translateX(-8px); }
+          100% { opacity: 1; transform: translateX(0); }
+        }
+        .yama-home-row {
+          transition: background 0.15s ease;
+        }
+        .yama-home-row:active {
+          background: rgba(140,127,104,0.08);
+        }
+      `}</style>
+      <button
+        onClick={onOpenSettings}
+        aria-label="Configuración"
+        style={{
+          position: "absolute", top: 18, right: 16, zIndex: 5,
+          width: 38, height: 38, borderRadius: "50%",
+          border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface,
+          color: HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer",
+        }}
+      >
+        <Settings size={17} />
+      </button>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 24px 30px", textAlign: "center" }}>
+        <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: HOME_COLORS.muted, marginBottom: 22 }}>{memory?.brand || "YAMA AI"}</div>
+        <div style={{ position: "relative" }}>
+          <div style={{ position: "absolute", inset: -30, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,175,126,0.25) 0%, rgba(201,175,126,0) 70%)" }} />
+          <CoreOrb size={120} />
+        </div>
+        <div style={{ fontSize: 24, marginTop: 24, fontWeight: 500, fontFamily: serifFont, color: HOME_COLORS.ink }}>¿Qué vamos a crear hoy?</div>
+        <div style={{ width: 36, height: 2, borderRadius: 2, background: HOME_COLORS.metallic, marginTop: 12 }} />
+        {plan === "FREE" && (
+          <button onClick={onUpgrade} style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 6, border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface, borderRadius: 20, padding: "8px 16px", fontFamily: sansFont, fontSize: 12.5, cursor: "pointer", color: HOME_COLORS.ink }}>
+            <Crown size={13} /> Mejorar a Pro
+          </button>
+        )}
+      </div>
+      <div style={{ flex: 1, padding: "0 18px 24px" }}>
+        <div style={{ background: HOME_COLORS.surface, borderRadius: 18, border: `1px solid ${HOME_COLORS.line}`, overflow: "hidden", boxShadow: "0 4px 18px rgba(140,127,104,0.10)" }}>
+          {options.map((o, i) => {
+            const Icon = o.icon;
+            return (
+              <button
+                key={o.id}
+                onClick={o.go}
+                className="yama-home-row"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 14,
+                  padding: "16px 16px",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: i < options.length - 1 ? `1px solid ${HOME_COLORS.line}` : "none",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  fontFamily: sansFont,
+                  animation: `yama-row-in 0.4s ease ${i * 0.07}s both`,
+                }}
+              >
+                <div style={{ width: 34, height: 34, borderRadius: "50%", background: HOME_COLORS.metallic, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Icon size={16} strokeWidth={1.8} color={HOME_COLORS.ink} />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14.5, fontWeight: 600, fontFamily: serifFont, color: HOME_COLORS.ink }}>{o.title}</div>
+                  <div style={{ fontSize: 11.5, color: HOME_COLORS.muted, marginTop: 2 }}>{o.desc}</div>
+                </div>
+                <span style={{ color: HOME_COLORS.muted, fontSize: 18, flexShrink: 0 }}>→</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- RETO DIARIO ---------------- */
+function DailyChallengesView({ onSelect }: any) {
+  const [challenges, setChallenges] = useState<string[] | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/challenges");
+        const data = await res.json();
+        if (!res.ok) { setError(data.error || "No se pudo cargar tu reto diario."); return; }
+        setChallenges(data.challenges);
+      } catch {
+        setError("No se pudo conectar. Revisa tu conexión.");
+      }
+    })();
+  }, []);
+
+  return (
+    <div style={{ flex: 1, overflowY: "auto", background: HOME_COLORS.bg }}>
+      <TopBar title="Reto diario" subtitle="20 sugerencias para mejorar hoy" />
+      <div style={{ padding: "0 18px 24px" }}>
+        {error && <div style={{ color: "#B4433A", fontSize: 12.5, marginBottom: 10, fontFamily: sansFont }}>{error}</div>}
+        {!challenges && !error && (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 0", color: HOME_COLORS.muted, fontFamily: sansFont, fontSize: 13 }}>
+            <CoreOrb size={56} active />
+            <div style={{ marginTop: 14 }}>Armando tu reto de hoy…</div>
+          </div>
+        )}
+        {challenges && (
+          <div style={{ background: HOME_COLORS.surface, borderRadius: 18, border: `1px solid ${HOME_COLORS.line}`, overflow: "hidden", boxShadow: "0 4px 18px rgba(140,127,104,0.10)" }}>
+            {challenges.map((c, i) => (
+              <button
+                key={i}
+                onClick={() => onSelect(c)}
+                className="yama-home-row"
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "14px 16px",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: i < challenges.length - 1 ? `1px solid ${HOME_COLORS.line}` : "none",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  fontFamily: sansFont,
+                }}
+              >
+                <span style={{ fontSize: 12, color: HOME_COLORS.muted, flexShrink: 0, width: 20 }}>{i + 1}.</span>
+                <span style={{ flex: 1, fontSize: 13.5, color: HOME_COLORS.ink }}>{c}</span>
+                <span style={{ color: HOME_COLORS.muted, fontSize: 16, flexShrink: 0 }}>→</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
