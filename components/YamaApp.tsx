@@ -621,12 +621,8 @@ function StrategistView() {
   );
 }
 
-/* ---------------- PANEL / MEMORIA / CONFIG ---------------- */
-function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount }: any) {
-  const [brand, setBrand] = useState(memory?.brand || "");
-  const [audience, setAudience] = useState(memory?.audience || "");
-  const [style, setStyleV] = useState(memory?.style || "");
-  const [noteDraft, setNoteDraft] = useState("");
+/* ---------------- PANEL / CONFIG ---------------- */
+function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, onLogout }: any) {
   const [profanityLevel, setProfanityLevel] = useState(memory?.profanityLevel || "none");
   const [personality, setPersonality] = useState(memory?.personality || "");
   const [speakingStyle, setSpeakingStyle] = useState(memory?.speakingStyle || "");
@@ -634,18 +630,9 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount }: 
   const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    setBrand(memory?.brand || ""); setAudience(memory?.audience || ""); setStyleV(memory?.style || "");
     setProfanityLevel(memory?.profanityLevel || "none");
     setPersonality(memory?.personality || ""); setSpeakingStyle(memory?.speakingStyle || ""); setUserProfile(memory?.userProfile || "");
   }, [memory]);
-
-  const patch = async (body: any) => {
-    const res = await fetch("/api/memory", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const data = await res.json();
-    if (!res.ok) { setNotice(data.error); return; }
-    setNotice("");
-    refreshMemory();
-  };
 
   const patchSettings = async (body: any) => {
     const res = await fetch("/api/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -657,7 +644,7 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount }: 
 
   return (
     <div style={{ flex: 1, overflowY: "auto" }}>
-      <TopBar title="Configuración" subtitle={memory?.brand || "Tu memoria y preferencias"} />
+      <TopBar title="Configuración" subtitle={memory?.brand || "Tus preferencias"} />
       <div style={{ padding: "0 18px 28px", fontFamily: sansFont }}>
         {plan === "FREE" && (
           <button onClick={onUpgrade} style={{ width: "100%", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, border: "none", background: COLORS.ink, color: "#fff", borderRadius: 12, padding: "12px 16px", fontSize: 13.5, cursor: "pointer" }}>
@@ -665,28 +652,6 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount }: 
           </button>
         )}
         {notice && <div style={{ color: "#B4433A", fontSize: 12.5, marginBottom: 10 }}>{notice}</div>}
-
-        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
-          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Memoria de YAMA</div>
-          {[["Marca / proyecto", brand, setBrand, "brand"], ["Público objetivo", audience, setAudience, "audience"], ["Estilo / identidad", style, setStyleV, "style"]].map(([label, val, setter, key]: any) => (
-            <div key={key} style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 5 }}>{label}</div>
-              <input value={val} onChange={(e) => setter(e.target.value)} onBlur={() => patch({ [key]: val })}
-                style={{ width: "100%", border: `1px solid ${COLORS.line}`, borderRadius: 10, padding: "10px 12px", fontFamily: sansFont, fontSize: 13.5, boxSizing: "border-box" }} />
-            </div>
-          ))}
-          {(memory?.notes || []).map((n: any) => (
-            <div key={n.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 10px", background: COLORS.bg, borderRadius: 9, marginBottom: 6, fontSize: 13 }}>
-              <span>{n.content}</span>
-              <button onClick={() => patch({ removeNoteId: n.id })} style={{ border: "none", background: "none", color: COLORS.muted, cursor: "pointer" }}><X size={13} /></button>
-            </div>
-          ))}
-          <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
-            <input value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} placeholder="Ej. Mi marca vende ropa urbana premium"
-              style={{ flex: 1, border: `1px solid ${COLORS.line}`, borderRadius: 9, padding: "8px 10px", fontFamily: sansFont, fontSize: 12.5, boxSizing: "border-box" }} />
-            <button onClick={() => { if (noteDraft.trim()) { patch({ addNote: noteDraft.trim() }); setNoteDraft(""); } }} style={{ width: 34, borderRadius: 9, border: "none", background: COLORS.ink, color: "#fff", cursor: "pointer" }}>+</button>
-          </div>
-        </div>
 
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
           <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Personalidad de YAMA</div>
@@ -735,6 +700,9 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount }: 
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
           <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Cuenta</div>
           <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
+          <button onClick={onLogout} style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.bg, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <LogOut size={14} /> Cerrar sesión
+          </button>
           <button onClick={onDeleteAccount} style={{ width: "100%", border: `1px solid #E0B4AC`, background: "#FBEFEC", color: "#8A3B2E", borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer" }}>
             Eliminar cuenta permanentemente
           </button>
