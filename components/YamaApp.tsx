@@ -290,7 +290,7 @@ function DailyChallengesView({ onSelect }: any) {
 /* ---------------- CHAT ---------------- */
 const MODE_LABEL: Record<string, string> = { idea: "Pensar una idea", story: "Crear una historia", content: "Crear contenido", free: "Chat con YAMA" };
 
-function ChatView({ chatMode, plan, initialMessage, onInitialMessageSent }: any) {
+function ChatView({ chatMode, plan, initialMessage, onInitialMessageSent, loadConversationId, onConversationLoaded, onOpenHistory }: any) {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [input, setInput] = useState("");
@@ -348,6 +348,31 @@ function ChatView({ chatMode, plan, initialMessage, onInitialMessageSent }: any)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialMessage]);
 
+  // Si el usuario eligió un chat del Historial, lo cargamos aquí.
+  useEffect(() => {
+    if (!loadConversationId) return;
+    (async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`/api/conversations/${loadConversationId}`);
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "No se pudo abrir esa conversación.");
+          return;
+        }
+        setConversationId(data.id);
+        setMessages(data.messages);
+      } catch {
+        setError("No se pudo conectar. Revisa tu conexión.");
+      } finally {
+        setLoading(false);
+        onConversationLoaded?.();
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadConversationId]);
+
   const toggleListen = async () => {
     setMicError("");
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -383,9 +408,14 @@ function ChatView({ chatMode, plan, initialMessage, onInitialMessageSent }: any)
           <div style={{ fontSize: 21, fontWeight: 500, fontFamily: serifFont, color: HOME_COLORS.ink }}>{MODE_LABEL[chatMode] || "Chat con YAMA"}</div>
           <div style={{ fontFamily: sansFont, fontSize: 13, color: HOME_COLORS.muted, marginTop: 2 }}>{plan === "FREE" ? "Plan gratuito" : "Plan Pro"}</div>
         </div>
-        <button onClick={() => setSpeakOn((v) => !v)} aria-label="Leer en voz alta" style={{ width: 38, height: 38, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: speakOn ? HOME_COLORS.ink : HOME_COLORS.surface, color: speakOn ? "#fff" : HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
-          {speakOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
-        </button>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+          <button onClick={onOpenHistory} aria-label="Historial" style={{ width: 38, height: 38, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface, color: HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+            <LayoutGrid size={16} />
+          </button>
+          <button onClick={() => setSpeakOn((v) => !v)} aria-label="Leer en voz alta" style={{ width: 38, height: 38, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: speakOn ? HOME_COLORS.ink : HOME_COLORS.surface, color: speakOn ? "#fff" : HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+            {speakOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
+        </div>
       </div>
 
       {(micError || error) && (
