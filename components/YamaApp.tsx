@@ -77,25 +77,32 @@ function BottomNav({ view, setView }: any) {
   );
 }
 
+/* Panel lateral de Configuración: entra desde la derecha */
 function SettingsModal({ open, onClose, children }: any) {
   if (!open) return null;
   return (
     <div
-      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-end", background: "rgba(36,31,24,0.35)", animation: "yama-modal-backdrop-in 0.25s ease" }}
+      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", justifyContent: "flex-end", background: "rgba(36,31,24,0.35)", animation: "yama-modal-backdrop-in 0.25s ease" }}
       onClick={onClose}
     >
       <style>{`
         @keyframes yama-modal-backdrop-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes yama-modal-sheet-in { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+        @keyframes yama-panel-in-right { 0% { transform: translateX(100%); } 100% { transform: translateX(0); } }
       `}</style>
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ background: COLORS.bg, width: "100%", maxHeight: "88vh", borderRadius: "24px 24px 0 0", overflowY: "auto", animation: "yama-modal-sheet-in 0.3s cubic-bezier(0.16,1,0.3,1)", display: "flex", flexDirection: "column" }}
+        style={{
+          background: COLORS.bg,
+          width: "min(420px, 92vw)",
+          height: "100%",
+          overflowY: "auto",
+          animation: "yama-panel-in-right 0.3s cubic-bezier(0.16,1,0.3,1)",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: "-8px 0 30px rgba(36,31,24,0.15)",
+        }}
       >
-        <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 0" }}>
-          <div style={{ width: 36, height: 4, borderRadius: 2, background: COLORS.line }} />
-        </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", padding: "8px 14px 0" }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", padding: "14px 14px 0" }}>
           <button onClick={onClose} aria-label="Cerrar" style={{ width: 32, height: 32, borderRadius: "50%", border: "none", background: COLORS.surface, color: COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
             <X size={16} />
           </button>
@@ -105,8 +112,6 @@ function SettingsModal({ open, onClose, children }: any) {
     </div>
   );
 }
-
-const MODE_LABEL: Record<string, string> = { idea: "Pensar una idea", story: "Crear una historia", content: "Crear contenido", free: "Chat con YAMA" };
 
 /* Pantalla flotante del Historial de chats */
 function HistoryModal({ open, onClose, onSelectConversation }: any) {
