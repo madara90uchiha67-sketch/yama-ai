@@ -353,3 +353,266 @@ function DailyChallengesView({ onSelect }: any) {
     </div>
   );
 }
+
+/* ---------------- CHAT ---------------- */
+function ChatView({ chatMode, plan, initialMessage, onInitialMessageSent, loadConversationId, onConversationLoaded, onOpenHistory }: any) {
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [listening, setListening] = useState(false);
+  const [micError, setMicError] = useState("");
+  const [speakOn, setSpeakOn] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [messages, loading]);
+
+  const speak = useCallback((text: string) => {
+    if (!speakOn || !("speechSynthesis" in window)) return;
+    const u = new SpeechSynthesisUtterance(stripForSpeech(text));
+    u.lang = "es-ES";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  }, [speakOn]);
+
+  const send = useCallback(async (text: string) => {
+    const content = text.trim();
+    if (!content) return;
+    setMessages((m) => [...m, { role: "user", content }]);
+    setInput(""); setLoading(true); setError("");
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId, mode: chatMode, content }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError((data.error || "Ocurrió un error.") + (data.debug ? " — " + data.debug : ""));
+        setMessages((m) => m.slice(0, -1));
+        return;
+      }
+      setConversationId(data.conversationId);
+      setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
+      speak(data.reply);
+    } catch {
+      setError("No pude conectarme. Revisa tu conexión.");
+      setMessages((m) => m.slice(0, -1));
+    } finally {
+      setLoading(false);
+    }
+  }, [conversationId, chatMode, speak]);
+
+  useEffect(() => {
+    if (initialMessage) {
+      send(initialMessage);
+      onInitialMessageSent?.();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialMessage]);
+
+  useEffect(() => {
+    if (!loadConversationId) return;
+    (async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`/api/conversations/${loadConversationId}`);
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || "No se pudo abrir esa conversación.");
+          return;
+        }
+        setConversationId(data.id);
+        setMessages(data.messages);
+      } catch {
+        setError("No se pudo conectar. Revisa tu conexión.");
+      } finally {
+        setLoading(false);
+        onConversationLoaded?.();
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadConversationId]);
+
+  const toggleListen = async () => {
+    setMicError("");
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { setMicError("Este navegador no soporta dictado por voz."); return; }
+    if (listening) { try { recognitionRef.current?.stop(); } catch {} setListening(false); return; }
+    try {
+      if (navigator.mediaDevices?.getUserMedia) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((t) => t.stop());
+      }
+    } catch { setMicError("Activa el permiso de micrófono en tu navegador."); return; }
+    try {
+      const rec = new SR();
+      rec.lang = "es-ES"; rec.interimResults = false;
+      rec.onresult = (ev: any) => setInput((p) => (p ? p + " " + ev.results[0][0].transcript : ev.results[0][0].transcript));
+      rec.onend = () => setListening(false);
+      rec.onerror = (ev: any) => { setListening(false); setMicError(ev.error === "not-allowed" ? "Activa el permiso de micrófono." : "No se pudo usar el micrófono."); };
+      recognitionRef.current = rec; rec.start(); setListening(true);
+    } catch { setListening(false); setMicError("No se pudo iniciar el micrófono."); }
+  };
+
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, background: HOME_COLORS.bg }}>
+      <style>{`
+        @keyframes yama-chat-empty-in { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes yama-bubble-in { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes yama-think-dot { 0%,80%,100% { opacity: 0.25; transform: scale(0.85); } 40% { opacity: 1; transform: scale(1); } }
+      `}</style>
+
+      <div style={{ padding: "22px 20px 14px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", borderBottom: `1px solid ${HOME_COLORS.line}` }}>
+        <div>
+          <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: HOME_COLORS.muted, marginBottom: 4 }}>YAMA AI</div>
+          <div style={{ fontSize: 21, fontWeight: 500, fontFamily: serifFont, color: HOME_COLORS.ink }}>{MODE_LABEL[chatMode] || "Chat con YAMA"}</div>
+          <div style={{ fontFamily: sansFont, fontSize: 13, color: HOME_COLORS.muted, marginTop: 2 }}>{plan === "FREE" ? "Plan gratuito" : "Plan Pro"}</div>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+          <button onClick={onOpenHistory} aria-label="Historial" style={{ width: 38, height: 38, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface, color: HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+            <LayoutGrid size={16} />
+          </button>
+          <button onClick={() => setSpeakOn((v) => !v)} aria-label="Leer en voz alta" style={{ width: 38, height: 38, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: speakOn ? HOME_COLORS.ink : HOME_COLORS.surface, color: speakOn ? "#fff" : HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+            {speakOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
+          </button>
+        </div>
+      </div>
+
+      {(micError || error) && (
+        <div style={{ margin: "10px 18px 0", padding: "9px 12px", borderRadius: 10, background: "#F6E4DC", color: "#8A3B2E", fontFamily: sansFont, fontSize: 12.5 }}>{micError || error}</div>
+      )}
+
+      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px 18px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {messages.length === 0 && (
+          <div style={{ margin: "24px auto", textAlign: "center", color: HOME_COLORS.muted, fontFamily: sansFont, fontSize: 13, maxWidth: 320, animation: "yama-chat-empty-in 0.5s ease" }}>
+            <div style={{ position: "relative", display: "inline-block" }}>
+              <div style={{ position: "absolute", inset: -20, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,175,126,0.25) 0%, rgba(201,175,126,0) 70%)" }} />
+              <CoreOrb size={64} />
+            </div>
+            <div style={{ marginTop: 14, marginBottom: 18 }}>Escribe o habla — YAMA piensa contigo.</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
+              {["Mejorar guion", "Crear ideas", "Hacerlo más viral", "Crear estrategia", "Crear una historia"].map((label) => (
+                <button
+                  key={label}
+                  onClick={() => send(label)}
+                  style={{ border: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface, color: HOME_COLORS.ink, borderRadius: 20, padding: "8px 14px", fontFamily: sansFont, fontSize: 12.5, cursor: "pointer" }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            style={{
+              alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+              maxWidth: "84%",
+              display: "flex",
+              gap: 8,
+              alignItems: "flex-end",
+              animation: "yama-bubble-in 0.3s ease",
+            }}
+          >
+            {m.role === "assistant" && (
+              <div style={{ flexShrink: 0, marginBottom: 2 }}>
+                <CoreOrb size={26} />
+              </div>
+            )}
+            <div
+              style={{
+                background: m.role === "user" ? HOME_COLORS.ink : HOME_COLORS.surface,
+                color: m.role === "user" ? "#FFF8EA" : HOME_COLORS.ink,
+                border: m.role === "user" ? "none" : `1px solid ${HOME_COLORS.line}`,
+                borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
+                padding: "11px 14px",
+                fontFamily: sansFont,
+                fontSize: 14,
+                lineHeight: 1.5,
+                whiteSpace: "pre-wrap",
+                boxShadow: m.role === "assistant" ? "0 2px 10px rgba(140,127,104,0.08)" : "none",
+              }}
+            >
+              {m.content}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div style={{ alignSelf: "flex-start", display: "flex", gap: 8, alignItems: "center" }}>
+            <CoreOrb size={26} />
+            <div style={{ display: "flex", gap: 4, background: HOME_COLORS.surface, border: `1px solid ${HOME_COLORS.line}`, borderRadius: "16px 16px 16px 4px", padding: "12px 16px" }}>
+              {[0, 1, 2].map((i) => (
+                <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: HOME_COLORS.muted, animation: `yama-think-dot 1.2s ease-in-out ${i * 0.15}s infinite` }} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: "flex", gap: 8, padding: "10px 14px calc(env(safe-area-inset-bottom, 0px) + 10px)", borderTop: `1px solid ${HOME_COLORS.line}`, background: HOME_COLORS.surface }}>
+        <button onClick={toggleListen} style={{ width: 42, height: 42, borderRadius: "50%", border: `1px solid ${HOME_COLORS.line}`, background: listening ? HOME_COLORS.ink : HOME_COLORS.bg, color: listening ? "#fff" : HOME_COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }} aria-label="Hablar">
+          {listening ? <MicOff size={17} /> : <Mic size={17} />}
+        </button>
+        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send(input)} placeholder="Escribe tu idea…"
+          style={{ flex: 1, border: `1px solid ${HOME_COLORS.line}`, borderRadius: 21, padding: "0 16px", fontFamily: sansFont, fontSize: 14, background: HOME_COLORS.bg, color: HOME_COLORS.ink }} />
+        <button onClick={() => send(input)} disabled={loading || !input.trim()} style={{ width: 42, height: 42, borderRadius: "50%", border: "none", background: HOME_COLORS.ink, color: "#FFF8EA", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", opacity: loading || !input.trim() ? 0.4 : 1, flexShrink: 0 }} aria-label="Enviar">
+          <Send size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- STRATEGIST ---------------- */
+function StrategistView() {
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState("");
+
+  const analyze = async () => {
+    if (!input.trim() || loading) return;
+    setLoading(true); setError(""); setResult(null);
+    try {
+      const res = await fetch("/api/strategist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ input }) });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || "No se pudo completar el análisis."); return; }
+      setResult(data.result);
+    } catch { setError("No se pudo completar el análisis."); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: "auto" }}>
+      <TopBar title="Modo estratega" subtitle="Ideas, campañas, productos, videos o marcas — analizados." />
+      <div style={{ padding: "0 18px 8px" }}>
+        <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ej. Quiero lanzar una línea de sudaderas de edición limitada…" rows={3}
+          style={{ width: "100%", border: `1px solid ${COLORS.line}`, borderRadius: 14, padding: "12px 14px", fontFamily: sansFont, fontSize: 14, resize: "none", boxSizing: "border-box", background: COLORS.surface }} />
+        <button onClick={analyze} disabled={loading || !input.trim()} style={{ marginTop: 10, width: "100%", padding: 13, borderRadius: 14, border: "none", background: COLORS.ink, color: "#fff", fontFamily: sansFont, fontSize: 14, fontWeight: 600, cursor: "pointer", opacity: loading || !input.trim() ? 0.5 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          {loading ? <><Loader2 size={15} style={{ animation: "yama-rotate 1s linear infinite" }} />Analizando…</> : <><Compass size={15} /> Analizar</>}
+        </button>
+        {error && <div style={{ color: "#B4433A", fontSize: 12.5, marginTop: 8, fontFamily: sansFont }}>{error}</div>}
+      </div>
+      {result && (
+        <div style={{ padding: "10px 18px 24px", fontFamily: sansFont }}>
+          {[["Problema", result.problema, Target], ["Oportunidad", result.oportunidad, Lightbulb], ["Estrategia", result.estrategia, Compass]].map(([label, text, Icon]: any) => (
+            <div key={label} style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 14, padding: "14px 16px", marginBottom: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}><Icon size={15} /><span style={{ fontSize: 12, textTransform: "uppercase", color: COLORS.muted }}>{label}</span></div>
+              <div style={{ fontSize: 14, lineHeight: 1.55 }}>{text}</div>
+            </div>
+          ))}
+          <div style={{ background: COLORS.ink, color: "#fff", borderRadius: 14, padding: "14px 16px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}><Rocket size={15} /><span style={{ fontSize: 12, textTransform: "uppercase", opacity: 0.7 }}>Próximos pasos</span></div>
+            <ol style={{ margin: 0, paddingLeft: 18, fontSize: 14, lineHeight: 1.7 }}>{(result.proximos_pasos || []).map((p: string, i: number) => <li key={i}>{p}</li>)}</ol>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
