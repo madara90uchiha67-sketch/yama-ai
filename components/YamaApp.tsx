@@ -616,3 +616,230 @@ function StrategistView() {
   );
 }
 
+/* ---------------- PANEL / MEMORIA / CONFIG ---------------- */
+function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount }: any) {
+  const [brand, setBrand] = useState(memory?.brand || "");
+  const [audience, setAudience] = useState(memory?.audience || "");
+  const [style, setStyleV] = useState(memory?.style || "");
+  const [noteDraft, setNoteDraft] = useState("");
+  const [profanityLevel, setProfanityLevel] = useState(memory?.profanityLevel || "none");
+  const [personality, setPersonality] = useState(memory?.personality || "");
+  const [speakingStyle, setSpeakingStyle] = useState(memory?.speakingStyle || "");
+  const [userProfile, setUserProfile] = useState(memory?.userProfile || "");
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    setBrand(memory?.brand || ""); setAudience(memory?.audience || ""); setStyleV(memory?.style || "");
+    setProfanityLevel(memory?.profanityLevel || "none");
+    setPersonality(memory?.personality || ""); setSpeakingStyle(memory?.speakingStyle || ""); setUserProfile(memory?.userProfile || "");
+  }, [memory]);
+
+  const patch = async (body: any) => {
+    const res = await fetch("/api/memory", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) { setNotice(data.error); return; }
+    setNotice("");
+    refreshMemory();
+  };
+
+  const patchSettings = async (body: any) => {
+    const res = await fetch("/api/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) { setNotice(data.error); return; }
+    setNotice("");
+    refreshMemory();
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: "auto" }}>
+      <TopBar title="Configuración" subtitle={memory?.brand || "Tu memoria y preferencias"} />
+      <div style={{ padding: "0 18px 28px", fontFamily: sansFont }}>
+        {plan === "FREE" && (
+          <button onClick={onUpgrade} style={{ width: "100%", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, border: "none", background: COLORS.ink, color: "#fff", borderRadius: 12, padding: "12px 16px", fontSize: 13.5, cursor: "pointer" }}>
+            <Crown size={14} /> Mejorar a Pro — más mensajes y memoria
+          </button>
+        )}
+        {notice && <div style={{ color: "#B4433A", fontSize: 12.5, marginBottom: 10 }}>{notice}</div>}
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Memoria de YAMA</div>
+          {[["Marca / proyecto", brand, setBrand, "brand"], ["Público objetivo", audience, setAudience, "audience"], ["Estilo / identidad", style, setStyleV, "style"]].map(([label, val, setter, key]: any) => (
+            <div key={key} style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 5 }}>{label}</div>
+              <input value={val} onChange={(e) => setter(e.target.value)} onBlur={() => patch({ [key]: val })}
+                style={{ width: "100%", border: `1px solid ${COLORS.line}`, borderRadius: 10, padding: "10px 12px", fontFamily: sansFont, fontSize: 13.5, boxSizing: "border-box" }} />
+            </div>
+          ))}
+          {(memory?.notes || []).map((n: any) => (
+            <div key={n.id} style={{ display: "flex", justifyContent: "space-between", padding: "8px 10px", background: COLORS.bg, borderRadius: 9, marginBottom: 6, fontSize: 13 }}>
+              <span>{n.content}</span>
+              <button onClick={() => patch({ removeNoteId: n.id })} style={{ border: "none", background: "none", color: COLORS.muted, cursor: "pointer" }}><X size={13} /></button>
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
+            <input value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} placeholder="Ej. Mi marca vende ropa urbana premium"
+              style={{ flex: 1, border: `1px solid ${COLORS.line}`, borderRadius: 9, padding: "8px 10px", fontFamily: sansFont, fontSize: 12.5, boxSizing: "border-box" }} />
+            <button onClick={() => { if (noteDraft.trim()) { patch({ addNote: noteDraft.trim() }); setNoteDraft(""); } }} style={{ width: 34, borderRadius: 9, border: "none", background: COLORS.ink, color: "#fff", cursor: "pointer" }}>+</button>
+          </div>
+        </div>
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Personalidad de YAMA</div>
+          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>¿Cómo quieres que te hable?</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+            {[["profesional", "Profesional"], ["directa", "Directa"], ["creativa", "Creativa"], ["mentor", "Mentor"], ["casual", "Casual"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setPersonality(val); patchSettings({ personality: val }); }}
+                style={{ border: `1px solid ${personality === val ? COLORS.ink : COLORS.line}`, background: personality === val ? COLORS.ink : COLORS.bg, color: personality === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>Forma de hablar</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+            {[["formal", "Formal"], ["casual", "Casual"], ["personalizada", "Personalizada"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setSpeakingStyle(val); patchSettings({ speakingStyle: val }); }}
+                style={{ border: `1px solid ${speakingStyle === val ? COLORS.ink : COLORS.line}`, background: speakingStyle === val ? COLORS.ink : COLORS.bg, color: speakingStyle === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>¿Para qué usas YAMA?</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {[["creador", "Creador de contenido"], ["emprendedor", "Emprendedor"], ["marca", "Dueño de marca"], ["freelancer", "Freelancer"], ["estudiante", "Estudiante"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setUserProfile(val); patchSettings({ userProfile: val }); }}
+                style={{ border: `1px solid ${userProfile === val ? COLORS.ink : COLORS.line}`, background: userProfile === val ? COLORS.ink : COLORS.bg, color: userProfile === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3 }}>Nivel de lenguaje</div>
+          <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 10 }}>Qué tan crudo puede hablar YAMA en ganchos y contenido.</div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {[["none", "Ninguno"], ["soft", "Suave"], ["medium", "Medio"], ["high", "Alto"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setProfanityLevel(val); patchSettings({ profanityLevel: val }); }}
+                style={{ flex: 1, border: `1px solid ${profanityLevel === val ? COLORS.ink : COLORS.line}`, background: profanityLevel === val ? COLORS.ink : COLORS.bg, color: profanityLevel === val ? "#fff" : COLORS.ink, borderRadius: 10, padding: "8px 6px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Cuenta</div>
+          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
+          <button onClick={onDeleteAccount} style={{ width: "100%", border: `1px solid #E0B4AC`, background: "#FBEFEC", color: "#8A3B2E", borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer" }}>
+            Eliminar cuenta permanentemente
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- ROOT ---------------- */
+export default function YamaApp() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [view, setView] = useState("home");
+  const [chatMode, setChatMode] = useState("free");
+  const [memory, setMemory] = useState<any>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [loadConversationId, setLoadConversationId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "unauthenticated") router.push("/login");
+  }, [status, router]);
+
+  const refreshMemory = useCallback(async () => {
+    const res = await fetch("/api/memory");
+    if (res.ok) setMemory(await res.json());
+  }, []);
+
+  useEffect(() => { if (status === "authenticated") refreshMemory(); }, [status, refreshMemory]);
+
+  const upgrade = async () => {
+    const res = await fetch("/api/billing/checkout", { method: "POST" });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+  };
+
+  const deleteAccount = async () => {
+    if (!confirm("¿Seguro que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.")) return;
+    const res = await fetch("/api/account/delete", { method: "DELETE" });
+    if (res.ok) {
+      await signOut({ callbackUrl: "/login" });
+    } else {
+      alert("No se pudo eliminar la cuenta. Intenta de nuevo.");
+    }
+  };
+
+  const goToChatWithMessage = (message: string) => {
+    setChatMode("free");
+    setPendingChatMessage(message);
+    setView("chat");
+  };
+
+  if (status === "loading" || !memory) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <CoreOrb size={48} active />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ fontFamily: serifFont, background: COLORS.bg, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+        {view === "home" && (
+          <HomeView
+            setView={setView}
+            setChatMode={setChatMode}
+            memory={memory}
+            plan={memory.plan}
+            onUpgrade={upgrade}
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+        )}
+        {view === "chat" && (
+          <ChatView
+            chatMode={chatMode}
+            plan={memory.plan}
+            initialMessage={pendingChatMessage}
+            onInitialMessageSent={() => setPendingChatMessage(null)}
+            loadConversationId={loadConversationId}
+            onConversationLoaded={() => setLoadConversationId(null)}
+            onOpenHistory={() => setHistoryOpen(true)}
+          />
+        )}
+        {view === "strategist" && <StrategistView />}
+        {view === "challenges" && <DailyChallengesView onSelect={goToChatWithMessage} />}
+      </div>
+      <div style={{ display: "flex", justifyContent: "center", padding: "4px 0" }}>
+        <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ border: "none", background: "none", color: COLORS.muted, fontFamily: sansFont, fontSize: 11, display: "flex", alignItems: "center", gap: 4, cursor: "pointer", padding: 4 }}>
+          <LogOut size={11} /> Cerrar sesión
+        </button>
+      </div>
+      <BottomNav view={view} setView={setView} />
+
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)}>
+        <PanelView memory={memory} refreshMemory={refreshMemory} plan={memory.plan} onUpgrade={upgrade} onDeleteAccount={deleteAccount} />
+      </SettingsModal>
+
+      <HistoryModal
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        onSelectConversation={(id: string) => {
+          setLoadConversationId(id);
+          setHistoryOpen(false);
+          setView("chat");
+        }}
+      />
+    </div>
+  );
+}
+
