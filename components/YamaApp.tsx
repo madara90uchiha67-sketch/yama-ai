@@ -112,6 +112,7 @@ function SettingsModal({ open, onClose, children }: any) {
     </div>
   );
 }
+const MODE_LABEL: Record<string, string> = { idea: "Pensar una idea", story: "Crear una historia", content: "Crear contenido", free: "Chat con YAMA" };
 
 /* Pantalla flotante del Historial de chats */
 function HistoryModal({ open, onClose, onSelectConversation }: any) {
