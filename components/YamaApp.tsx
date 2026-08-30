@@ -699,17 +699,25 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
         </div>
 
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
-          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Cuenta</div>
-          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
-          <button onClick={onLogout} style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.bg, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-            <LogOut size={14} /> Cerrar sesión
-          </button>
-          <button onClick={onDeleteAccount} style={{ width: "100%", border: `1px solid #E0B4AC`, background: "#FBEFEC", color: "#8A3B2E", borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer" }}>
-            Eliminar cuenta permanentemente
-          </button>
-        </div>
-      </div>
-    </div>
+  <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Cuenta</div>
+  <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
+  <a
+    href="https://wa.me/573505643381?text=Hola%2C%20quiero%20reportar%20algo%20sobre%20YAMA%20AI%3A%20"
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.bg, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none", boxSizing: "border-box" }}
+  >
+    <MessageCircle size={14} /> Enviar feedback
+  </a>
+  <button onClick={onLogout} style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.bg, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+    <LogOut size={14} /> Cerrar sesión
+  </button>
+  <button onClick={onDeleteAccount} style={{ width: "100%", border: `1px solid #E0B4AC`, background: "#FBEFEC", color: "#8A3B2E", borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer" }}>
+    Eliminar cuenta permanentemente
+  </button>
+</div>
+</div>
+</div>
   );
 }
 
