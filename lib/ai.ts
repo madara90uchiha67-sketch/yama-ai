@@ -124,29 +124,46 @@ export async function generateDailyChallenges(memory: {
   notes: { content: string }[];
 }): Promise<string[]> {
   const context = buildMemoryBlock(memory);
-  const system = `Eres YAMA AI. Basándote en lo que sabes del usuario y su proyecto, genera exactamente 20 sugerencias concretas y accionables para que mejore hoy — pueden ser de negocio (ej. dropshipping, ventas, marketing) o de contenido (ej. grabación, edición, guion, viralidad), según lo que sepas de su proyecto. Cada sugerencia debe ser corta (máximo 12 palabras), específica y accionable — no genérica. Responde ÚNICAMENTE con un array JSON de 20 strings, sin ningún texto antes ni después, sin explicaciones, sin introducciones — tu respuesta completa debe empezar con "[" y terminar con "]". Así: ["sugerencia 1", "sugerencia 2", ...]. Si no sabes nada del usuario todavía, da sugerencias generales útiles para cualquier creador o emprendedor que está empezando.`;
+  const system = `Eres YAMA AI. Basándote en lo que sabes del usuario y su proyecto, genera exactamente 20 sugerencias concretas y accionables para que mejore hoy — pueden ser de negocio (ej. dropshipping, ventas, marketing) o de contenido (ej. grabación, edición, guion, viralidad), según lo que sepas de su proyecto. Cada sugerencia debe ser corta (máximo 10 palabras), específica y accionable — no genérica. Responde ÚNICAMENTE con un array JSON de 20 strings, sin ningún texto antes ni después, sin explicaciones. Tu respuesta completa debe empezar con "[" y terminar con "]". Así: ["sugerencia 1", "sugerencia 2", ...]. Si no sabes nada del usuario todavía, da sugerencias generales útiles para cualquier creador o emprendedor que está empezando.`;
 
   try {
     const raw = await callAI({
       system: system + context,
       messages: [{ role: "user", content: "Genera mis 20 sugerencias de hoy." }],
-      maxTokens: 900,
+      maxTokens: 2000,
     });
 
-    // Gemini a veces agrega texto antes o después del JSON aunque se le pida que no.
-    // Buscamos específicamente el array (desde el primer "[" hasta el último "]")
-    // e ignoramos cualquier texto extra alrededor.
     const start = raw.indexOf("[");
-    const end = raw.lastIndexOf("]");
-    if (start === -1 || end === -1 || end < start) {
+    if (start === -1) {
       console.error("YAMA AI — respuesta sin array JSON reconocible:", raw.slice(0, 200));
       return [];
     }
-    const jsonSlice = raw.slice(start, end + 1);
-    const parsed = JSON.parse(jsonSlice);
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed.slice(0, 20).map((s) => String(s));
+
+    const end = raw.lastIndexOf("]");
+    if (end !== -1 && end > start) {
+      try {
+        const parsed = JSON.parse(raw.slice(start, end + 1));
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.slice(0, 20).map((s) => String(s));
+        }
+      } catch {
+        // Sigue abajo al plan B si el JSON no es válido aunque tenga [ y ].
+      }
     }
+
+    // Plan B: la respuesta vino cortada (sin "]" final, o el JSON quedó roto).
+    // Rescatamos manualmente cada sugerencia entre comillas que sí se alcanzó a escribir completa.
+    const matches = raw.slice(start).match(/"((?:[^"\\]|\\.)*)"/g) || [];
+    const rescued = matches
+      .map((m) => m.slice(1, -1).replace(/\\"/g, '"'))
+      .filter((s) => s.length > 3);
+
+    if (rescued.length > 0) {
+      console.error(`YAMA AI — reto diario truncado, rescatadas ${rescued.length} de 20 sugerencias.`);
+      return rescued.slice(0, 20);
+    }
+
+    console.error("YAMA AI — no se pudo rescatar ninguna sugerencia:", raw.slice(0, 200));
     return [];
   } catch (e) {
     console.error("YAMA AI — fallo generando reto diario:", e);
