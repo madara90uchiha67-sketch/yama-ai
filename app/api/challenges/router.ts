@@ -5,6 +5,8 @@ import { prisma } from "@/lib/db";
 import { todayKey } from "@/lib/plans";
 import { generateDailyChallenges } from "@/lib/ai";
 
+export const maxDuration = 60;
+
 export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
@@ -20,7 +22,6 @@ export async function GET() {
 
   const today = todayKey();
 
-  // Si ya generamos el reto de hoy, lo devolvemos directo (sin gastar en la IA de nuevo).
   if (user.dailyChallengesDate === today && user.dailyChallenges) {
     try {
       const cached = JSON.parse(user.dailyChallenges);
