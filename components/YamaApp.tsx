@@ -767,12 +767,12 @@ export default function YamaApp() {
   };
 
   if (status === "loading" || !memory) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <CoreOrb size={48} active />
-      </div>
-    );
-  }
+  return (
+    <div style={{ minHeight: "100vh", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <CoreOrb size={48} active />
+    </div>
+  );
+}
 
   return (
     <div style={{ fontFamily: serifFont, background: COLORS.bg, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
