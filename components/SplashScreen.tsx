@@ -15,7 +15,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
     <div
       style={{
         position: "fixed", inset: 0, zIndex: 9999,
-        background: "#0A0A09",
+        background: "#FFFFFF",
         display: "flex", alignItems: "center", justifyContent: "center",
         opacity: stage === "fadeout" ? 0 : 1,
         transition: "opacity 0.5s ease",
@@ -30,11 +30,11 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
       `}</style>
 
       <div style={{ textAlign: "center" }}>
-        <div
+        <img
+          src="/logo.png"
+          alt="YAMA"
           style={{
-            width: 88, height: 88, borderRadius: "50%", margin: "0 auto 24px",
-            background: "radial-gradient(circle at 32% 28%, #4a4a48 0%, #17171666 38%, #0c0c0b 72%)",
-            boxShadow: "0 0 36px rgba(255,255,255,0.12), inset -6px -8px 16px rgba(255,255,255,0.06), inset 6px 8px 16px rgba(0,0,0,0.55)",
+            width: 96, height: 96, margin: "0 auto 24px", display: "block",
             opacity: 0,
             animation: "yama-spring-in 550ms cubic-bezier(0.34, 1.56, 0.64, 1) 0ms forwards",
           }}
@@ -42,7 +42,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         <div
           style={{
             fontFamily: "'Iowan Old Style', Georgia, ui-serif, serif",
-            fontSize: 26, letterSpacing: "0.3em", color: "#FFF8EA",
+            fontSize: 26, letterSpacing: "0.3em", color: "#241F18",
             opacity: 0,
             animation: "yama-spring-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 150ms forwards",
           }}
@@ -52,7 +52,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         <div
           style={{
             fontFamily: "'Inter', ui-sans-serif, sans-serif",
-            fontSize: 10, letterSpacing: "0.22em", color: "rgba(255,248,234,0.55)", marginTop: 8,
+            fontSize: 10, letterSpacing: "0.22em", color: "#8C7F68", marginTop: 8,
             opacity: 0,
             animation: "yama-spring-in 500ms cubic-bezier(0.34, 1.56, 0.64, 1) 280ms forwards",
           }}
