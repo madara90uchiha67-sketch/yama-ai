@@ -5,10 +5,18 @@ import { useRouter } from "next/navigation";
 import {
   Brain, Film, TrendingUp, PenSquare, Send, Mic, MicOff, Home, MessageCircle,
   Compass, LayoutGrid, Sparkles, Target, Lightbulb, Rocket, Volume2, VolumeX,
-  Loader2, Settings, X, LogOut, Crown, Flame,
+  Loader2, Settings, X, LogOut, Crown, Flame, MessageCircle as FeedbackIcon,
 } from "lucide-react";
 
-const COLORS = { bg: "#FAFAF8", surface: "#FFFFFF", line: "#E6E4DF", ink: "#141412", muted: "#8B8880" };
+// Paleta única, unificada: beige / negro / blanco con acento metálico.
+const COLORS = {
+  bg: "transparent", // las pantallas dejan ver las olas de fondo detrás
+  surface: "#FFFBF3",
+  line: "#E4D8C3",
+  ink: "#241F18",
+  muted: "#8C7F68",
+  metallic: "linear-gradient(135deg, #E8D9B5, #FFF6E0, #C9AF7E)",
+};
 const sansFont = "'Inter', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 const serifFont = "'Iowan Old Style', Georgia, ui-serif, serif";
 
@@ -17,6 +25,38 @@ function stripForSpeech(text: string) {
     .replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").replace(/_(.*?)_/g, "$1")
     .replace(/`{1,3}(.*?)`{1,3}/g, "$1").replace(/^#{1,6}\s+/gm, "").replace(/^[-•]\s+/gm, "")
     .replace(/[*_#`~]/g, "").trim();
+}
+
+/* Fondo de olas: 3 capas fijas, superpuestas, presencia media, sin movimiento */
+function WaveBackground() {
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: -1, overflow: "hidden", background: "#FFFFFF" }} aria-hidden="true">
+      <svg
+        viewBox="0 0 400 900"
+        preserveAspectRatio="none"
+        style={{ width: "100%", height: "100%" }}
+      >
+        {/* Ola 1: beige, la más grande, base */}
+        <path
+          d="M0,120 C90,180 130,60 220,110 C300,155 340,90 400,130 L400,900 L0,900 Z"
+          fill="#F6EEE0"
+          opacity="1"
+        />
+        {/* Ola 2: negro muy tenue, capa media */}
+        <path
+          d="M0,260 C100,320 160,220 240,270 C310,310 350,250 400,290 L400,900 L0,900 Z"
+          fill="#0A0A09"
+          opacity="0.05"
+        />
+        {/* Ola 3: blanco, capa superior, da profundidad */}
+        <path
+          d="M0,400 C110,470 170,370 250,420 C320,460 360,400 400,440 L400,900 L0,900 Z"
+          fill="#FFFFFF"
+          opacity="0.6"
+        />
+      </svg>
+    </div>
+  );
 }
 
 function CoreOrb({ size = 132, active = false }) {
@@ -48,7 +88,7 @@ function TopBar({ title, subtitle, right }: any) {
     <div style={{ padding: "22px 20px 14px", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
       <div>
         <div style={{ fontFamily: sansFont, fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: COLORS.muted, marginBottom: 4 }}>YAMA AI</div>
-        <div style={{ fontSize: 21, fontWeight: 500, fontFamily: serifFont }}>{title}</div>
+        <div style={{ fontSize: 21, fontWeight: 500, fontFamily: serifFont, color: COLORS.ink }}>{title}</div>
         {subtitle && <div style={{ fontFamily: sansFont, fontSize: 13, color: COLORS.muted, marginTop: 2 }}>{subtitle}</div>}
       </div>
       {right}
@@ -77,7 +117,6 @@ function BottomNav({ view, setView }: any) {
   );
 }
 
-/* Panel lateral de Configuración: entra desde la derecha */
 function SettingsModal({ open, onClose, children }: any) {
   if (!open) return null;
   return (
@@ -92,7 +131,7 @@ function SettingsModal({ open, onClose, children }: any) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: COLORS.bg,
+          background: "#FFFBF3",
           width: "min(420px, 92vw)",
           height: "100%",
           overflowY: "auto",
@@ -112,7 +151,88 @@ function SettingsModal({ open, onClose, children }: any) {
     </div>
   );
 }
+
 const MODE_LABEL: Record<string, string> = { idea: "Pensar una idea", story: "Crear una historia", content: "Crear contenido", free: "Chat con YAMA" };
+
+function HistoryModal({ open, onClose, onSelectConversation }: any) {
+  const [conversations, setConversations] = useState<any[] | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    setConversations(null);
+    setError("");
+    (async () => {
+      try {
+        const res = await fetch("/api/conversations");
+        const data = await res.json();
+        if (!res.ok) { setError(data.error || "No se pudo cargar el historial."); return; }
+        setConversations(data.conversations);
+      } catch {
+        setError("No se pudo conectar. Revisa tu conexión.");
+      }
+    })();
+  }, [open]);
+
+  if (!open) return null;
+
+  const formatDate = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString("es", { day: "numeric", month: "short" });
+  };
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-end", background: "rgba(36,31,24,0.35)", animation: "yama-modal-backdrop-in 0.25s ease" }}
+      onClick={onClose}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ background: "#F6EEE0", width: "100%", maxHeight: "80vh", borderRadius: "24px 24px 0 0", overflowY: "auto", animation: "yama-modal-sheet-in 0.3s cubic-bezier(0.16,1,0.3,1)", display: "flex", flexDirection: "column" }}
+      >
+        <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 0" }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: COLORS.line }} />
+        </div>
+        <TopBar title="Historial" subtitle="Tus conversaciones anteriores" right={
+          <button onClick={onClose} aria-label="Cerrar" style={{ width: 32, height: 32, borderRadius: "50%", border: "none", background: COLORS.surface, color: COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+            <X size={16} />
+          </button>
+        } />
+        <div style={{ padding: "0 18px 24px" }}>
+          {error && <div style={{ color: "#B4433A", fontSize: 12.5, marginBottom: 10, fontFamily: sansFont }}>{error}</div>}
+          {!conversations && !error && (
+            <div style={{ display: "flex", justifyContent: "center", padding: "30px 0" }}>
+              <CoreOrb size={40} active />
+            </div>
+          )}
+          {conversations && conversations.length === 0 && (
+            <div style={{ textAlign: "center", color: COLORS.muted, fontFamily: sansFont, fontSize: 13, padding: "30px 0" }}>
+              Todavía no tienes conversaciones guardadas.
+            </div>
+          )}
+          {conversations && conversations.length > 0 && (
+            <div style={{ background: COLORS.surface, borderRadius: 18, border: `1px solid ${COLORS.line}`, overflow: "hidden" }}>
+              {conversations.map((c, i) => (
+                <button
+                  key={c.id}
+                  onClick={() => onSelectConversation(c.id)}
+                  className="yama-home-row"
+                  style={{ width: "100%", display: "flex", flexDirection: "column", gap: 4, padding: "14px 16px", background: "transparent", border: "none", borderBottom: i < conversations.length - 1 ? `1px solid ${COLORS.line}` : "none", cursor: "pointer", textAlign: "left", fontFamily: sansFont }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                    <span style={{ fontSize: 11, color: COLORS.muted, textTransform: "uppercase", letterSpacing: "0.05em" }}>{MODE_LABEL[c.mode] || "Chat"}</span>
+                    <span style={{ fontSize: 11, color: COLORS.muted, flexShrink: 0 }}>{formatDate(c.updatedAt)}</span>
+                  </div>
+                  <div style={{ fontSize: 13.5, color: COLORS.ink, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.preview}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+                                                         }
 
 /* Pantalla flotante del Historial de chats */
 function HistoryModal({ open, onClose, onSelectConversation }: any) {
