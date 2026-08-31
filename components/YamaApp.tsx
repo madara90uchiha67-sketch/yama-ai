@@ -731,7 +731,7 @@ function StrategistView() {
       )}
     </div>
   );
-}                                                                                      } ()ñ }
+}
 
   /* ---------------- PANEL / CONFIG ---------------- */
 function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, onLogout }: any) {
