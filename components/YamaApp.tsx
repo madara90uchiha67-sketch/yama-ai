@@ -732,8 +732,8 @@ function StrategistView() {
     </div>
   );
 }                                                                                      } ()ñ }
-       
-/* ---------------- PANEL / CONFIG ---------------- */
+
+  /* ---------------- PANEL / CONFIG ---------------- */
 function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, onLogout }: any) {
   const [profanityLevel, setProfanityLevel] = useState(memory?.profanityLevel || "none");
   const [personality, setPersonality] = useState(memory?.personality || "");
@@ -766,12 +766,12 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
         {notice && <div style={{ color: "#B4433A", fontSize: 12.5, marginBottom: 10 }}>{notice}</div>}
 
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
-          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Personalidad de YAMA</div>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Personalidad de YAMA</div>
           <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>¿Cómo quieres que te hable?</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
             {[["profesional", "Profesional"], ["directa", "Directa"], ["creativa", "Creativa"], ["mentor", "Mentor"], ["casual", "Casual"]].map(([val, label]) => (
               <button key={val} onClick={() => { setPersonality(val); patchSettings({ personality: val }); }}
-                style={{ border: `1px solid ${personality === val ? COLORS.ink : COLORS.line}`, background: personality === val ? COLORS.ink : COLORS.bg, color: personality === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                style={{ border: `1px solid ${personality === val ? COLORS.ink : COLORS.line}`, background: personality === val ? COLORS.ink : COLORS.surface, color: personality === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
                 {label}
               </button>
             ))}
@@ -780,7 +780,7 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
             {[["formal", "Formal"], ["casual", "Casual"], ["personalizada", "Personalizada"]].map(([val, label]) => (
               <button key={val} onClick={() => { setSpeakingStyle(val); patchSettings({ speakingStyle: val }); }}
-                style={{ border: `1px solid ${speakingStyle === val ? COLORS.ink : COLORS.line}`, background: speakingStyle === val ? COLORS.ink : COLORS.bg, color: speakingStyle === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                style={{ border: `1px solid ${speakingStyle === val ? COLORS.ink : COLORS.line}`, background: speakingStyle === val ? COLORS.ink : COLORS.surface, color: speakingStyle === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
                 {label}
               </button>
             ))}
@@ -789,7 +789,7 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
             {[["creador", "Creador de contenido"], ["emprendedor", "Emprendedor"], ["marca", "Dueño de marca"], ["freelancer", "Freelancer"], ["estudiante", "Estudiante"]].map(([val, label]) => (
               <button key={val} onClick={() => { setUserProfile(val); patchSettings({ userProfile: val }); }}
-                style={{ border: `1px solid ${userProfile === val ? COLORS.ink : COLORS.line}`, background: userProfile === val ? COLORS.ink : COLORS.bg, color: userProfile === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                style={{ border: `1px solid ${userProfile === val ? COLORS.ink : COLORS.line}`, background: userProfile === val ? COLORS.ink : COLORS.surface, color: userProfile === val ? "#fff" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
                 {label}
               </button>
             ))}
@@ -797,12 +797,12 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
         </div>
 
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3 }}>Nivel de lenguaje</div>
+          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, color: COLORS.ink }}>Nivel de lenguaje</div>
           <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 10 }}>Qué tan crudo puede hablar YAMA en ganchos y contenido.</div>
           <div style={{ display: "flex", gap: 6 }}>
             {[["none", "Ninguno"], ["soft", "Suave"], ["medium", "Medio"], ["high", "Alto"]].map(([val, label]) => (
               <button key={val} onClick={() => { setProfanityLevel(val); patchSettings({ profanityLevel: val }); }}
-                style={{ flex: 1, border: `1px solid ${profanityLevel === val ? COLORS.ink : COLORS.line}`, background: profanityLevel === val ? COLORS.ink : COLORS.bg, color: profanityLevel === val ? "#fff" : COLORS.ink, borderRadius: 10, padding: "8px 6px", fontSize: 12, cursor: "pointer" }}>
+                style={{ flex: 1, border: `1px solid ${profanityLevel === val ? COLORS.ink : COLORS.line}`, background: profanityLevel === val ? COLORS.ink : COLORS.surface, color: profanityLevel === val ? "#fff" : COLORS.ink, borderRadius: 10, padding: "8px 6px", fontSize: 12, cursor: "pointer" }}>
                 {label}
               </button>
             ))}
@@ -810,25 +810,25 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
         </div>
 
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
-  <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10 }}>Cuenta</div>
-  <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
-  <a
-    href="https://wa.me/573505643381?text=Hola%2C%20quiero%20reportar%20algo%20sobre%20YAMA%20AI%3A%20"
-    target="_blank"
-    rel="noopener noreferrer"
-    style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.bg, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none", boxSizing: "border-box" }}
-  >
-    <MessageCircle size={14} /> Enviar feedback
-  </a>
-  <button onClick={onLogout} style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.bg, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-    <LogOut size={14} /> Cerrar sesión
-  </button>
-  <button onClick={onDeleteAccount} style={{ width: "100%", border: `1px solid #E0B4AC`, background: "#FBEFEC", color: "#8A3B2E", borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer" }}>
-    Eliminar cuenta permanentemente
-  </button>
-</div>
-</div>
-</div>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Cuenta</div>
+          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
+          <a
+            href="https://wa.me/573505643381?text=Hola%2C%20quiero%20reportar%20algo%20sobre%20YAMA%20AI%3A%20"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.surface, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none", boxSizing: "border-box" }}
+          >
+            <FeedbackIcon size={14} /> Enviar feedback
+          </a>
+          <button onClick={onLogout} style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.surface, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <LogOut size={14} /> Cerrar sesión
+          </button>
+          <button onClick={onDeleteAccount} style={{ width: "100%", border: `1px solid #E0B4AC`, background: "#FBEFEC", color: "#8A3B2E", borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer" }}>
+            Eliminar cuenta permanentemente
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -878,15 +878,16 @@ export default function YamaApp() {
   };
 
   if (status === "loading" || !memory) {
-  return (
-    <div style={{ minHeight: "100vh", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <CoreOrb size={48} active />
-    </div>
-  );
-}
+    return (
+      <div style={{ minHeight: "100vh", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <CoreOrb size={48} active />
+      </div>
+    );
+  }
 
   return (
-    <div style={{ fontFamily: serifFont, background: COLORS.bg, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div style={{ fontFamily: serifFont, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
+      <WaveBackground />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
         {view === "home" && (
           <HomeView
@@ -936,4 +937,4 @@ export default function YamaApp() {
       />
     </div>
   );
-}     
+}
