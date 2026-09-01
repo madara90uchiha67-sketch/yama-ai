@@ -11,7 +11,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage("reveal"), 1200);
-    const t2 = setTimeout(() => setStage("hold"), 1900);
+    const t2 = setTimeout(() => setStage("hold"), 2100);
     const t3 = setTimeout(() => setStage("fadeout"), 3600);
     const t4 = setTimeout(() => onFinish(), 4200);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
@@ -41,9 +41,12 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
           60% { opacity: 1; }
           100% { transform: translateX(0px); opacity: 0; }
         }
-        @keyframes yama-logo-reveal {
-          0% { opacity: 0; transform: scale(0.7); filter: blur(8px); }
-          70% { opacity: 1; transform: scale(1.06); filter: blur(0px); }
+        @keyframes yama-ring-draw {
+          0% { stroke-dashoffset: 340; opacity: 0.3; }
+          100% { stroke-dashoffset: 0; opacity: 1; }
+        }
+        @keyframes yama-sphere-in {
+          0% { opacity: 0; transform: scale(0.7); filter: blur(6px); }
           100% { opacity: 1; transform: scale(1); filter: blur(0px); }
         }
         @keyframes yama-glow-breathe {
@@ -66,20 +69,12 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         }}
       />
 
-      {/* Partículas de luz convergiendo hacia el centro, una por ángulo */}
+      {/* Partículas de luz convergiendo hacia el centro */}
       {!revealed && PARTICLES.map((p, i) => (
-        <div
-          key={i}
-          style={{
-            position: "absolute",
-            width: 0, height: 0,
-            transform: `rotate(${p.angle}deg)`,
-          }}
-        >
+        <div key={i} style={{ position: "absolute", width: 0, height: 0, transform: `rotate(${p.angle}deg)` }}>
           <div
             style={{
-              position: "absolute",
-              width: 5, height: 5, borderRadius: "50%",
+              position: "absolute", width: 5, height: 5, borderRadius: "50%",
               background: "#7FC4FF",
               boxShadow: "0 0 8px 2px rgba(127,196,255,0.9)",
               animation: `yama-particle-in 1.1s ease-in ${p.delay}ms forwards`,
@@ -88,12 +83,26 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         </div>
       ))}
 
-      {/* Logo real, revelado con halo azul */}
+      {/* Anillo de borde: se "dibuja" primero, como trazo de luz */}
+      {!revealed && (
+        <svg width="120" height="120" style={{ position: "absolute" }}>
+          <circle
+            cx="60" cy="60" r="54"
+            fill="none"
+            stroke="#7FC4FF"
+            strokeWidth="1.5"
+            strokeDasharray="340"
+            style={{ animation: "yama-ring-draw 1.1s ease-out forwards", filter: "drop-shadow(0 0 6px rgba(127,196,255,0.8))" }}
+          />
+        </svg>
+      )}
+
+      {/* Esfera negra (dibujada con CSS, sin imagen, sin fondo blanco) + halo azul */}
       <div
         style={{
           position: "relative", zIndex: 2, textAlign: "center",
           opacity: revealed ? 1 : 0,
-          animation: revealed ? "yama-logo-reveal 0.7s cubic-bezier(0.16,1,0.3,1) forwards" : "none",
+          animation: revealed ? "yama-sphere-in 0.6s cubic-bezier(0.16,1,0.3,1) forwards" : "none",
         }}
       >
         <div style={{ position: "relative", width: 100, height: 100, margin: "0 auto 22px" }}>
@@ -104,7 +113,13 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
               animation: "yama-glow-breathe 2.6s ease-in-out infinite",
             }}
           />
-          <img src="/icons/icon-512.png" alt="YAMA" style={{ width: "100%", height: "100%", position: "relative", zIndex: 1 }} />
+          <div
+            style={{
+              position: "relative", zIndex: 1, width: "100%", height: "100%", borderRadius: "50%",
+              background: "radial-gradient(circle at 32% 28%, #4a4a48 0%, #17171666 38%, #0c0c0b 72%)",
+              boxShadow: "0 0 30px rgba(90,160,255,0.35), inset -8px -10px 20px rgba(255,255,255,0.05), inset 6px 8px 18px rgba(0,0,0,0.6)",
+            }}
+          />
         </div>
         <div
           style={{
