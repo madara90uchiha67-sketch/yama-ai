@@ -30,7 +30,7 @@ function stripForSpeech(text: string) {
 /* Fondo de olas: 3 capas fijas, superpuestas, presencia media, sin movimiento */
 function WaveBackground() {
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: -1, overflow: "hidden", background: "#FFFFFF" }} aria-hidden="true">
+    <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden", background: "#FFFFFF" }} aria-hidden="true">
       <svg
         viewBox="0 0 400 900"
         preserveAspectRatio="none"
