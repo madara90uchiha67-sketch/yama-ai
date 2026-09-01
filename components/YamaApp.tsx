@@ -807,7 +807,7 @@ export default function YamaApp() {
   return (
     <div style={{ fontFamily: serifFont, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
       <WaveBackground />
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, position: "relative", zIndex: 1 }}>
         {view === "home" && (
           <HomeView
             setView={setView}
@@ -832,7 +832,9 @@ export default function YamaApp() {
         {view === "strategist" && <StrategistView />}
         {view === "challenges" && <DailyChallengesView onSelect={goToChatWithMessage} />}
       </div>
-      <BottomNav view={view} setView={setView} />
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <BottomNav view={view} setView={setView} />
+      </div>
 
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)}>
         <PanelView
