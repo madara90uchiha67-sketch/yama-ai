@@ -104,7 +104,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
               animation: "yama-glow-breathe 2.6s ease-in-out infinite",
             }}
           />
-          <img src="/logo.png" alt="YAMA" style={{ width: "100%", height: "100%", position: "relative", zIndex: 1 }} />
+          <img src="/icon-512.png" alt="YAMA" style={{ width: "100%", height: "100%", position: "relative", zIndex: 1 }} />
         </div>
         <div
           style={{
