@@ -755,6 +755,16 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
 export default function YamaApp() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  useEffect(() => {
+    if ((window as any).Paddle) return;
+    const script = document.createElement("script");
+    script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+    script.onload = () => {
+      (window as any).Paddle.Environment.set("sandbox");
+      (window as any).Paddle.Initialize({ token: process.env.NEXT_PUBLIC_PADDLE_TOKEN });
+    };
+    document.body.appendChild(script);
+  }, []);
   const [view, setView] = useState("home");
   const [chatMode, setChatMode] = useState("free");
   const [memory, setMemory] = useState<any>(null);
