@@ -20,7 +20,10 @@ model User {
   stripeSubscriptionId   String?  @unique
   stripeCurrentPeriodEnd DateTime?
 
-  brand         String?
+paddleCustomerId     String? @unique
+  paddleSubscriptionId String? @unique
+  
+brand         String?
   audience      String?
   style         String?
   notes         MemoryNote[]
