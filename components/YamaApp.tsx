@@ -784,12 +784,19 @@ export default function YamaApp() {
 
   useEffect(() => { if (status === "authenticated") refreshMemory(); }, [status, refreshMemory]);
 
-  const upgrade = async () => {
-    const res = await fetch("/api/billing/checkout", { method: "POST" });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
+  const upgrade = () => {
+    const paddle = (window as any).Paddle;
+    if (!paddle) {
+      alert("El sistema de pagos todavía está cargando, intenta de nuevo en un segundo.");
+      return;
+    }
+    paddle.Checkout.open({
+      items: [{ priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_ID, quantity: 1 }],
+      customer: { email: session?.user?.email || undefined },
+      customData: { userId: (session?.user as any)?.id },
+    });
   };
-
+  
   const deleteAccount = async () => {
     if (!confirm("¿Seguro que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.")) return;
     const res = await fetch("/api/account/delete", { method: "DELETE" });
