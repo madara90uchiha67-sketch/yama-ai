@@ -345,7 +345,7 @@ function HomeView({ setView, setChatMode, memory, plan, onUpgrade, onOpenSetting
                 }}
               >
                 <div style={{ width: 34, height: 34, borderRadius: "50%", background: COLORS.metallic, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Icon size={16} strokeWidth={1.8} color={COLORS.ink} />
+                  <Icon size={16} strokeWidth={1.8} color="#FFFFFF" />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 14.5, fontWeight: 600, fontFamily: serifFont, color: COLORS.ink }}>{o.title}</div>
