@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import React, { memo, useState, useEffect, useCallback, useRef } from "react";
 import {
   Brain,
