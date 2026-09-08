@@ -1,23 +1,35 @@
 "use client";
 import React, { useEffect, useState } from "react";
 
-const PARTICLES = Array.from({ length: 12 }, (_, i) => ({
-  angle: (360 / 12) * i,
-  delay: (i % 4) * 80,
-}));
-
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
-  const [stage, setStage] = useState<"gather" | "reveal" | "hold" | "fadeout">("gather");
+  const [stage, setStage] = useState<"slide" | "settled" | "fadeout">("slide");
 
   useEffect(() => {
-    const t1 = setTimeout(() => setStage("reveal"), 1200);
-    const t2 = setTimeout(() => setStage("hold"), 2100);
-    const t3 = setTimeout(() => setStage("fadeout"), 3600);
-    const t4 = setTimeout(() => onFinish(), 4200);
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+    const t1 = setTimeout(() => setStage("settled"), 1000);
+    const t2 = setTimeout(() => setStage("fadeout"), 3200);
+    const t3 = setTimeout(() => onFinish(), 3800);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [onFinish]);
 
-  const revealed = stage === "reveal" || stage === "hold" || stage === "fadeout";
+  const settled = stage === "settled" || stage === "fadeout";
+
+  const Logo = ({ opacity = 1 }: { opacity?: number }) => (
+    <div style={{ position: "relative", width: 100, height: 100, opacity }}>
+      <div
+        style={{
+          position: "absolute", inset: 0, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 55%, rgba(255,255,255,0) 78%)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute", inset: 22, borderRadius: "50%",
+          background: "radial-gradient(circle at 32% 28%, #4a4a48 0%, #17171666 38%, #0c0c0b 72%)",
+          boxShadow: "inset -6px -8px 16px rgba(255,255,255,0.06), inset 5px 7px 14px rgba(0,0,0,0.6)",
+        }}
+      />
+    </div>
+  );
 
   return (
     <div
@@ -27,31 +39,18 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         display: "flex", alignItems: "center", justifyContent: "center",
         overflow: "hidden",
         opacity: stage === "fadeout" ? 0 : 1,
-        transition: "opacity 0.6s ease",
+        transition: "opacity 0.5s ease",
       }}
     >
       <style>{`
-        @keyframes yama-core-pulse {
-          0% { opacity: 0.15; transform: scale(0.8); }
-          50% { opacity: 0.55; transform: scale(1.15); }
-          100% { opacity: 0.35; transform: scale(1); }
+        @keyframes yama-slide-in {
+          0% { transform: translateX(-160%); }
+          65% { transform: translateX(6%); }
+          100% { transform: translateX(0%); }
         }
-        @keyframes yama-particle-in {
-          0% { transform: translateX(70px); opacity: 0; }
-          60% { opacity: 1; }
-          100% { transform: translateX(0px); opacity: 0; }
-        }
-        @keyframes yama-ring-draw {
-          0% { stroke-dashoffset: 340; opacity: 0.3; }
-          100% { stroke-dashoffset: 0; opacity: 1; }
-        }
-        @keyframes yama-sphere-in {
-          0% { opacity: 0; transform: scale(0.7); filter: blur(6px); }
-          100% { opacity: 1; transform: scale(1); filter: blur(0px); }
-        }
-        @keyframes yama-glow-breathe {
-          0%, 100% { opacity: 0.35; transform: scale(1); }
-          50% { opacity: 0.55; transform: scale(1.08); }
+        @keyframes yama-echo-fade {
+          0% { opacity: 0.35; }
+          100% { opacity: 0; }
         }
         @keyframes yama-text-in {
           0% { opacity: 0; transform: translateY(6px); }
@@ -59,86 +58,43 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         }
       `}</style>
 
-      {/* Resplandor central azul, siempre presente, pulsando */}
-      <div
-        style={{
-          position: "absolute", width: 340, height: 340, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(60,140,255,0.45) 0%, rgba(40,100,220,0.15) 45%, rgba(0,0,0,0) 75%)",
-          filter: "blur(6px)",
-          animation: "yama-core-pulse 2.4s ease-in-out infinite",
-        }}
-      />
-
-      {/* Partículas de luz convergiendo hacia el centro */}
-      {!revealed && PARTICLES.map((p, i) => (
-        <div key={i} style={{ position: "absolute", width: 0, height: 0, transform: `rotate(${p.angle}deg)` }}>
-          <div
-            style={{
-              position: "absolute", width: 5, height: 5, borderRadius: "50%",
-              background: "#7FC4FF",
-              boxShadow: "0 0 8px 2px rgba(127,196,255,0.9)",
-              animation: `yama-particle-in 1.1s ease-in ${p.delay}ms forwards`,
-            }}
-          />
+      {/* Copias "eco" del logo, desfasadas en tiempo, que se desvanecen rápido detrás del logo principal */}
+      {!settled && [0, 1, 2].map((i) => (
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            animation: `yama-slide-in 0.85s cubic-bezier(0.22,0.9,0.32,1) ${i * 60}ms both, yama-echo-fade 0.5s ease ${i * 60 + 300}ms forwards`,
+          }}
+        >
+          <Logo opacity={0.3 - i * 0.08} />
         </div>
       ))}
 
-      {/* Anillo de borde: se "dibuja" primero, como trazo de luz */}
-      {!revealed && (
-        <svg width="120" height="120" style={{ position: "absolute" }}>
-          <circle
-            cx="60" cy="60" r="54"
-            fill="none"
-            stroke="#7FC4FF"
-            strokeWidth="1.5"
-            strokeDasharray="340"
-            style={{ animation: "yama-ring-draw 1.1s ease-out forwards", filter: "drop-shadow(0 0 6px rgba(127,196,255,0.8))" }}
-          />
-        </svg>
-      )}
-
-      {/* Esfera negra (dibujada con CSS, sin imagen, sin fondo blanco) + halo azul */}
+      {/* Logo principal */}
       <div
         style={{
-          position: "relative", zIndex: 2, textAlign: "center",
-          opacity: revealed ? 1 : 0,
-          animation: revealed ? "yama-sphere-in 0.6s cubic-bezier(0.16,1,0.3,1) forwards" : "none",
+          position: "absolute",
+          animation: "yama-slide-in 0.85s cubic-bezier(0.22,0.9,0.32,1) forwards",
         }}
       >
-        <div style={{ position: "relative", width: 100, height: 100, margin: "0 auto 22px" }}>
-          <div
-            style={{
-              position: "absolute", inset: -26, borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(90,160,255,0.5) 0%, rgba(90,160,255,0) 70%)",
-              animation: "yama-glow-breathe 2.6s ease-in-out infinite",
-            }}
-          />
-          <div
-            style={{
-              position: "relative", zIndex: 1, width: "100%", height: "100%", borderRadius: "50%",
-              background: "radial-gradient(circle at 32% 28%, #4a4a48 0%, #17171666 38%, #0c0c0b 72%)",
-              boxShadow: "0 0 30px rgba(90,160,255,0.35), inset -8px -10px 20px rgba(255,255,255,0.05), inset 6px 8px 18px rgba(0,0,0,0.6)",
-            }}
-          />
-        </div>
-        <div
-          style={{
-            fontFamily: "'Iowan Old Style', Georgia, ui-serif, serif",
-            fontSize: 24, letterSpacing: "0.3em", color: "#EAF3FF",
-            opacity: 0,
-            animation: revealed ? "yama-text-in 0.6s ease 0.3s forwards" : "none",
-          }}
-        >
+        <Logo />
+      </div>
+
+      {/* Texto, aparece una vez que el logo ya se asentó */}
+      <div
+        style={{
+          position: "absolute", top: "62%", left: "50%",
+          transform: "translate(-50%, 0)",
+          textAlign: "center",
+          opacity: 0,
+          animation: settled ? "yama-text-in 0.5s ease 0.1s forwards" : "none",
+        }}
+      >
+        <div style={{ fontFamily: "'Iowan Old Style', Georgia, ui-serif, serif", fontSize: 22, letterSpacing: "0.3em", color: "#fff" }}>
           YAMA
         </div>
-        <div
-          style={{
-            fontFamily: "'Inter', ui-sans-serif, sans-serif",
-            fontSize: 10, letterSpacing: "0.22em", color: "rgba(180,210,255,0.6)", marginTop: 8,
-            opacity: 0,
-            animation: revealed ? "yama-text-in 0.6s ease 0.45s forwards" : "none",
-          }}
-        >
+        <div style={{ fontFamily: "'Inter', ui-sans-serif, sans-serif", fontSize: 9.5, letterSpacing: "0.2em", color: "rgba(255,255,255,0.5)", marginTop: 6 }}>
           AI FOR CREATORS &amp; FOUNDERS
         </div>
       </div>
