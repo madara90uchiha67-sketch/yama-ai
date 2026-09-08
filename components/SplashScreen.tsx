@@ -53,9 +53,9 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
     >
       <div
         style={{
-          width: "50%",
-          maxWidth: "150px", // Reducido a 150px para un tamaño compacto y minimalista
-          maxHeight: "150px",
+          width: "65%",
+          maxWidth: "220px", // Tamaño equilibrado y elegante (220px)
+          maxHeight: "220px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -74,7 +74,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
             width: "100%",
             height: "100%",
             objectFit: "contain",
-            borderRadius: "8px",
+            borderRadius: "10px",
             backgroundColor: "#000000",
             transform: "translate3d(0, 0, 0)",
             backfaceVisibility: "hidden",
