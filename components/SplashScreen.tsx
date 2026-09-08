@@ -1,24 +1,38 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 interface SplashScreenProps {
   onFinish?: () => void;
 }
 
 export default function SplashScreen({ onFinish }: SplashScreenProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const handleStart = () => {
-    setIsPlaying(true);
+  useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.play();
+      // Intentamos reproducir el video con audio automáticamente
+      videoRef.current.play().catch(() => {
+        // Si el navegador bloquea el audio automático, silenciamos temporalmente y reproducimos
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          videoRef.current.play();
+        }
+      });
+    }
+  }, []);
+
+  // Si el usuario toca la pantalla, intentamos desmutear el video al instante
+  const handleUserInteraction = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = false;
     }
   };
 
   return (
     <div
+      onClick={handleUserInteraction}
+      onTouchStart={handleUserInteraction}
       style={{
         position: "fixed",
         top: 0,
@@ -27,41 +41,23 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
         height: "100vh",
         backgroundColor: "#000000",
         display: "flex",
-        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         zIndex: 9999,
+        cursor: "pointer",
       }}
     >
-      {!isPlaying ? (
-        <button
-          onClick={handleStart}
-          style={{
-            padding: "16px 32px",
-            fontSize: "18px",
-            fontWeight: "bold",
-            color: "#ffffff",
-            backgroundColor: "#2563eb",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}
-        >
-          Iniciar animación con sonido
-        </button>
-      ) : (
-        <video
-          ref={videoRef}
-          src="/1000054026.mp4"
-          playsInline
-          onEnded={onFinish}
-          style={{
-            maxWidth: "100%",
-            maxHeight: "100%",
-            objectFit: "contain",
-          }}
-        />
-      )}
+      <video
+        ref={videoRef}
+        src="/lv_0_20260907220958.mp4"
+        playsInline
+        onEnded={onFinish}
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          objectFit: "contain",
+        }}
+      />
     </div>
   );
 }
