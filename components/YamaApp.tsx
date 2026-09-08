@@ -903,7 +903,6 @@ export default function YamaApp() {
 
   return (
     <div style={{ fontFamily: serifFont, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative" }}>
-      <WaveBackground />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, position: "relative", zIndex: 1 }}>
         {view === "home" && (
           <HomeView
