@@ -59,7 +59,23 @@ CoreOrb.displayName = "CoreOrb";
 
 function IconButton({ children, onClick, label, active }: any) {
   return (
-    <button onClick={onClick} aria-label={label} style={{ width: 38, height: 38, borderRadius: "50%", border: `1px solid ${COLORS.line}`, background: active ? COLORS.ink : COLORS.surface, color: active ? "#fff" : COLORS.ink, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+    <button
+      onClick={onClick}
+      aria-label={label}
+      style={{
+        width: 38,
+        height: 38,
+        borderRadius: "50%",
+        border: `1px solid ${COLORS.borderLight}`,
+        background: active ? COLORS.accentPrimary : COLORS.bgElevated,
+        color: active ? COLORS.bgElevated : COLORS.textPrimary,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        flexShrink: 0,
+      }}
+    >
       {children}
     </button>
   );
