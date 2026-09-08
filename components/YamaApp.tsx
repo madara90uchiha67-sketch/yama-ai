@@ -41,29 +41,59 @@ export const COLORS = {
   paper: "#F9F6F0",
 };
 
-export const CoreOrb = React.memo(({ isListening, isSpeaking }: { isListening?: boolean; isSpeaking?: boolean }) => {
+interface CoreOrbProps {
+  size?: number;
+  tamaño?: number;
+  active?: boolean;
+  activo?: boolean;
+  isListening?: boolean;
+  isSpeaking?: boolean;
+}
+
+export const CoreOrb = React.memo(({ 
+  size, 
+  tamaño, 
+  active, 
+  activo, 
+  isListening, 
+  isSpeaking 
+}: CoreOrbProps) => {
+  // Unificamos las propiedades antiguas y nuevas
+  const orbSize = size || tamaño || 144; // 144px por defecto (w-36)
+  const isActive = active || activo || isListening || isSpeaking;
+
   return (
-    <div className="relative flex items-center justify-center w-48 h-48 my-6">
+    <div 
+      className="relative flex items-center justify-center my-6"
+      style={{ width: orbSize * 1.3, height: orbSize * 1.3 }}
+    >
+      {/* Anillo de pulso dinámico */}
       <div 
         className={`absolute inset-0 rounded-full transition-all duration-500 ease-in-out ${
-          isListening 
-            ? "animate-ping scale-110 opacity-30" 
-            : isSpeaking 
+          isActive 
             ? "animate-pulse scale-105 opacity-40" 
             : "opacity-15 animate-pulse"
         }`}
         style={{ backgroundColor: isListening ? COLORS.accentWarm : COLORS.accentSecondary }}
       />
+      
+      {/* Esfera central */}
       <div 
-        className="w-36 h-36 rounded-full shadow-2xl transition-transform duration-300 transform hover:scale-105 flex items-center justify-center"
+        className="rounded-full shadow-2xl transition-transform duration-300 transform hover:scale-105 flex items-center justify-center"
         style={{
+          width: orbSize,
+          height: orbSize,
           background: `radial-gradient(circle at 35% 35%, ${COLORS.bgElevated}, ${COLORS.accentSecondary} 60%, ${COLORS.accentPrimary} 100%)`,
           boxShadow: COLORS.shadowSoft
         }}
       >
         <div 
-          className="w-28 h-28 rounded-full opacity-80 backdrop-blur-md"
-          style={{ background: `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8), transparent 70%)` }}
+          className="rounded-full opacity-80 backdrop-blur-md"
+          style={{
+            width: orbSize * 0.75,
+            height: orbSize * 0.75,
+            background: `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8), transparent 70%)`
+          }}
         />
       </div>
     </div>
