@@ -12,7 +12,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
       }}
     >
       <video
-        src="/lv_0_20260907220958.mp4"
+        src="Logo.mp4"
         autoPlay
         muted
         playsInline
