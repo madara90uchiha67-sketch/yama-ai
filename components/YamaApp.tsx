@@ -8,9 +8,13 @@ import {
   Loader2, Settings, X, LogOut, Crown, Flame, MessageCircle as FeedbackIcon,
 } from "lucide-react";
 
-// Objeto base con la nueva paleta de colores
+
+// 1. Fuentes globales requeridas por los componentes
+const sansFont = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+const serifFont = '"Iowan Old Style", "Apple Garamond", "Baskerville", serif';
+
+// 2. Objeto base de colores
 const BASE_COLORS: Record<string, string> = {
-  // Nueva paleta
   bgPrimary: "#F9F6F0",
   bgSecondary: "#F0EAE1",
   bgElevated: "#FFFFFF",
@@ -24,7 +28,7 @@ const BASE_COLORS: Record<string, string> = {
   borderFocus: "rgba(217, 160, 91, 0.4)",
   shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
 
-  // Mapeo de nombres antiguos conocidos
+  // Mapeo retrocompatible
   bg: "#F9F6F0",
   line: "rgba(26, 24, 21, 0.08)",
   ink: "#1A1815",
@@ -35,12 +39,11 @@ const BASE_COLORS: Record<string, string> = {
   gold: "#D9A05B",
 };
 
-// Proxy para evitar que TypeScript/Next.js falle si falta alguna propiedad
+// 3. Proxy para blindar TypeScript contra cualquier propiedad de color faltante
 export const COLORS: any = new Proxy(BASE_COLORS, {
   get: (target, prop: string) => {
     if (prop in target) return target[prop];
-    // Retorno por defecto para cualquier propiedad desconocida
-    return "#1A1815"; 
+    return "#1A1815"; // Color por defecto si se pide una variable desconocida
   }
 });
 
