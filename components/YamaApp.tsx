@@ -8,22 +8,37 @@ import {
   Loader2, Settings, X, LogOut, Crown, Flame, MessageCircle as FeedbackIcon,
 } from "lucide-react";
 
-export const COLORS = {
-  bgPrimary: "#F9F6F0",       // Beige cálido refinado
-  bgSecondary: "#F0EAE1",     // Elevación sutil para tarjetas y modales
-  bgElevated: "#FFFFFF",      // Blanco puro para destacar el contenido
-  
-  accentPrimary: "#1A1815",   // Negro carbón profundo
-  accentSecondary: "#8C8275", // Gris topo/metálico
-  accentWarm: "#D9A05B",      // Ámbar metálico para seleccionados/detalles
-  
-  textPrimary: "#1A1815",     // Máximo contraste y legibilidad
-  textSecondary: "#655E53",   // Descripciones y texto secundario
-  textMuted: "#A39B8E",       // Placeholders e íconos inactivos
+// Variables de tipografía
+const sansFont = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+const serifFont = '"Iowan Old Style", "Apple Garamond", "Baskerville", serif';
 
+export const COLORS = {
+  // Fondos y Elevaciones
+  bgPrimary: "#F9F6F0",
+  bgSecondary: "#F0EAE1",
+  bgElevated: "#FFFFFF",
+  
+  // Acentos y Marca
+  accentPrimary: "#1A1815",
+  accentSecondary: "#8C8275",
+  accentWarm: "#D9A05B",
+  
+  // Textos
+  textPrimary: "#1A1815",
+  textSecondary: "#655E53",
+  textMuted: "#A39B8E",
+
+  // Bordes y Sombras
   borderLight: "rgba(26, 24, 21, 0.08)",
   borderFocus: "rgba(217, 160, 91, 0.4)",
   shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
+
+  // Alias para retrocompatibilidad con el código existente
+  line: "rgba(26, 24, 21, 0.08)",
+  ink: "#1A1815",
+  surface: "#FFFFFF",
+  muted: "#A39B8E",
+  paper: "#F9F6F0",
 };
 
 export const CoreOrb = React.memo(({ isListening, isSpeaking }: { isListening?: boolean; isSpeaking?: boolean }) => {
