@@ -1,14 +1,33 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import {
-  Brain, Film, TrendingUp, PenSquare, Send, Mic, MicOff, Home, MessageCircle,
-  Compass, LayoutGrid, Sparkles, Target, Lightbulb, Rocket, Volume2, VolumeX,
-  Loader2, Settings, X, LogOut, Crown, Flame, MessageCircle as FeedbackIcon,
-} from "lucide-react";
 
-import React, { memo, useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import React, { memo, useState, useEffect, useCallback, useRef } from "react";
+import {
+  Brain,
+  Film,
+  TrendingUp,
+  SquarePen,
+  Send,
+  Mic,
+  MicOff,
+  Home,
+  MessageCircle,
+  Compass,
+  LayoutGrid,
+  Sparkles,
+  Target,
+  Lightbulb,
+  Rocket,
+  Volume2,
+  VolumeX,
+  Loader2,
+  Settings,
+  X,
+  LogOut,
+  Crown,
+  Flame,
+  MessageSquare,
+} from "lucide-react";
 
 // 1. Fuentes globales
 const sansFont = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
@@ -39,7 +58,7 @@ const BASE_COLORS: Record<string, string> = {
   borderFocus: "rgba(217, 160, 91, 0.4)",
   shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
 
-  // Mapeo retrocompatible de colores
+  // Mapeo retrocompatible
   bg: "#F9F6F0",
   line: "rgba(26, 24, 21, 0.08)",
   ink: "#1A1815",
@@ -50,7 +69,7 @@ const BASE_COLORS: Record<string, string> = {
   gold: "#D9A05B",
 };
 
-// 4. Proxy de protección para COLORS
+// 4. Proxy de protección
 export const COLORS: any = new Proxy(BASE_COLORS, {
   get: (target, prop: string) => {
     if (prop in target) return target[prop];
