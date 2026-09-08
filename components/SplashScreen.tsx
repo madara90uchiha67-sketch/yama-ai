@@ -3,14 +3,7 @@ import React from "react";
 
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
   return (
-    <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 9999,
-        background: "#000000",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        overflow: "hidden",
-      }}
-    >
+    
       <video
         src="Logo.mp4"
         autoPlay
