@@ -76,68 +76,21 @@ export const COLORS: any = new Proxy(BASE_COLORS, {
     if (prop in target) return target[prop];
     return "#1A1815";
   }
-});
 
-interface CoreOrbProps {
-  size?: number;
-  tamaño?: number;
-  active?: boolean;
-  activo?: boolean;
-  isListening?: boolean;
-  isSpeaking?: boolean;
-}
-
-export const CoreOrb = React.memo(({ 
-  size, 
-  tamaño, 
-  active, 
-  activo, 
-  isListening, 
-  isSpeaking 
-}: CoreOrbProps) => {
-  // Unificamos las propiedades antiguas y nuevas
-  const orbSize = size || tamaño || 144; // 144px por defecto (w-36)
-  const isActive = active || activo || isListening || isSpeaking;
-
+  function CoreOrb({ size = 132, active = false }: { size?: number; active?: boolean }) {
   return (
-    <div 
-      className="relative flex items-center justify-center my-6"
-      style={{ width: orbSize * 1.3, height: orbSize * 1.3 }}
-    >
-      {/* Anillo de pulso dinámico */}
-      <div 
-        className={`absolute inset-0 rounded-full transition-all duration-500 ease-in-out ${
-          isActive 
-            ? "animate-pulse scale-105 opacity-40" 
-            : "opacity-15 animate-pulse"
-        }`}
-        style={{ backgroundColor: isListening ? COLORS.accentWarm : COLORS.accentSecondary }}
-      />
-      
-      {/* Esfera central */}
-      <div 
-        className="rounded-full shadow-2xl transition-transform duration-300 transform hover:scale-105 flex items-center justify-center"
-        style={{
-          width: orbSize,
-          height: orbSize,
-          background: `radial-gradient(circle at 35% 35%, ${COLORS.bgElevated}, ${COLORS.accentSecondary} 60%, ${COLORS.accentPrimary} 100%)`,
-          boxShadow: COLORS.shadowSoft
-        }}
-      >
-        <div 
-          className="rounded-full opacity-80 backdrop-blur-md"
-          style={{
-            width: orbSize * 0.75,
-            height: orbSize * 0.75,
-            background: `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8), transparent 70%)`
-          }}
-        />
-      </div>
+    <div style={{ width: size, height: size, position: "relative" }} aria-hidden="true">
+      <style>{`
+        @keyframes yama-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+        @keyframes yama-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes yama-pulse { 0%,100% { opacity: .55; } 50% { opacity: .9; } }
+      `}</style>
+      <div style={{ position: "absolute", inset: -18, borderRadius: "50%", background: "radial-gradient(circle, rgba(17,17,17,0.10) 0%, rgba(17,17,17,0) 70%)", animation: `yama-pulse ${active ? 1.6 : 3.6}s ease-in-out infinite` }} />
+      <div style={{ position: "absolute", inset: -8, borderRadius: "50%", border: "1px solid rgba(17,17,17,0.14)", animation: `yama-rotate ${active ? 10 : 22}s linear infinite`, borderTopColor: "rgba(17,17,17,0.35)" }} />
+      <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "radial-gradient(circle at 32% 28%, #4a4a48 0%, #17171666 38%, #0c0c0b 72%)", boxShadow: "inset -10px -14px 26px rgba(255,255,255,0.06), inset 8px 10px 22px rgba(0,0,0,0.55), 0 18px 30px rgba(17,17,17,0.18)", animation: `yama-breathe ${active ? 1.4 : 4.2}s ease-in-out infinite` }} />
     </div>
   );
-});
-
-CoreOrb.displayName = "CoreOrb";
+}
 
 function IconButton({ children, onClick, label, active }: any) {
   return (
