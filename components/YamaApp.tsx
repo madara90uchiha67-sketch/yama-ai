@@ -8,39 +8,41 @@ import {
   Loader2, Settings, X, LogOut, Crown, Flame, MessageCircle as FeedbackIcon,
 } from "lucide-react";
 
-// Variables de tipografía
-const sansFont = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-const serifFont = '"Iowan Old Style", "Apple Garamond", "Baskerville", serif';
-
-export const COLORS = {
-  // Fondos y Elevaciones
-  bgPrimary: "#F9F6F0",       // Beige cálido refinado
-  bgSecondary: "#F0EAE1",     // Elevación sutil para tarjetas/modales
-  bgElevated: "#FFFFFF",      // Blanco puro para destacar el contenido
-  
-  // Acentos y Marca
-  accentPrimary: "#1A1815",   // Negro carbón profundo
-  accentSecondary: "#8C8275", // Gris topo/metálico
-  accentWarm: "#D9A05B",      // Ámbar metálico para seleccionados/detalles
-  
-  // Textos
-  textPrimary: "#1A1815",     // Máximo contraste y legibilidad
-  textSecondary: "#655E53",   // Descripciones y texto secundario
-  textMuted: "#A39B8E",       // Placeholders e íconos inactivos
-
-  // Bordes y Sombras
+// Objeto base con la nueva paleta de colores
+const BASE_COLORS: Record<string, string> = {
+  // Nueva paleta
+  bgPrimary: "#F9F6F0",
+  bgSecondary: "#F0EAE1",
+  bgElevated: "#FFFFFF",
+  accentPrimary: "#1A1815",
+  accentSecondary: "#8C8275",
+  accentWarm: "#D9A05B",
+  textPrimary: "#1A1815",
+  textSecondary: "#655E53",
+  textMuted: "#A39B8E",
   borderLight: "rgba(26, 24, 21, 0.08)",
   borderFocus: "rgba(217, 160, 91, 0.4)",
   shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
 
-  // Alias para retrocompatibilidad completa con tu código anterior
+  // Mapeo de nombres antiguos conocidos
   bg: "#F9F6F0",
   line: "rgba(26, 24, 21, 0.08)",
   ink: "#1A1815",
   surface: "#FFFFFF",
   muted: "#A39B8E",
   paper: "#F9F6F0",
+  metallic: "#8C8275",
+  gold: "#D9A05B",
 };
+
+// Proxy para evitar que TypeScript/Next.js falle si falta alguna propiedad
+export const COLORS: any = new Proxy(BASE_COLORS, {
+  get: (target, prop: string) => {
+    if (prop in target) return target[prop];
+    // Retorno por defecto para cualquier propiedad desconocida
+    return "#1A1815"; 
+  }
+});
 
 interface CoreOrbProps {
   size?: number;
