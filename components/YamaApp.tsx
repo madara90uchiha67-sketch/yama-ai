@@ -8,12 +8,23 @@ import {
   Loader2, Settings, X, LogOut, Crown, Flame, MessageCircle as FeedbackIcon,
 } from "lucide-react";
 
+import React, { memo, useState, useEffect, useCallback } from "react";
 
-// 1. Fuentes globales requeridas por los componentes
+// 1. Fuentes globales
 const sansFont = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 const serifFont = '"Iowan Old Style", "Apple Garamond", "Baskerville", serif';
 
-// 2. Objeto base de colores
+// 2. Función auxiliar para lectura por voz
+const stripForSpeech = (text: string): string => {
+  if (!text) return "";
+  return text
+    .replace(/[*_~`#>-]/g, "")
+    .replace(/\[.*?\]\(.*?\)/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+// 3. Objeto base de colores
 const BASE_COLORS: Record<string, string> = {
   bgPrimary: "#F9F6F0",
   bgSecondary: "#F0EAE1",
@@ -28,7 +39,7 @@ const BASE_COLORS: Record<string, string> = {
   borderFocus: "rgba(217, 160, 91, 0.4)",
   shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
 
-  // Mapeo retrocompatible
+  // Mapeo retrocompatible de colores
   bg: "#F9F6F0",
   line: "rgba(26, 24, 21, 0.08)",
   ink: "#1A1815",
@@ -39,11 +50,11 @@ const BASE_COLORS: Record<string, string> = {
   gold: "#D9A05B",
 };
 
-// 3. Proxy para blindar TypeScript contra cualquier propiedad de color faltante
+// 4. Proxy de protección para COLORS
 export const COLORS: any = new Proxy(BASE_COLORS, {
   get: (target, prop: string) => {
     if (prop in target) return target[prop];
-    return "#1A1815"; // Color por defecto si se pide una variable desconocida
+    return "#1A1815";
   }
 });
 
