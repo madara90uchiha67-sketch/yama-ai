@@ -14,26 +14,27 @@ const serifFont = '"Iowan Old Style", "Apple Garamond", "Baskerville", serif';
 
 export const COLORS = {
   // Fondos y Elevaciones
-  bgPrimary: "#F9F6F0",
-  bgSecondary: "#F0EAE1",
-  bgElevated: "#FFFFFF",
+  bgPrimary: "#F9F6F0",       // Beige cálido refinado
+  bgSecondary: "#F0EAE1",     // Elevación sutil para tarjetas/modales
+  bgElevated: "#FFFFFF",      // Blanco puro para destacar el contenido
   
   // Acentos y Marca
-  accentPrimary: "#1A1815",
-  accentSecondary: "#8C8275",
-  accentWarm: "#D9A05B",
+  accentPrimary: "#1A1815",   // Negro carbón profundo
+  accentSecondary: "#8C8275", // Gris topo/metálico
+  accentWarm: "#D9A05B",      // Ámbar metálico para seleccionados/detalles
   
   // Textos
-  textPrimary: "#1A1815",
-  textSecondary: "#655E53",
-  textMuted: "#A39B8E",
+  textPrimary: "#1A1815",     // Máximo contraste y legibilidad
+  textSecondary: "#655E53",   // Descripciones y texto secundario
+  textMuted: "#A39B8E",       // Placeholders e íconos inactivos
 
   // Bordes y Sombras
   borderLight: "rgba(26, 24, 21, 0.08)",
   borderFocus: "rgba(217, 160, 91, 0.4)",
   shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
 
-  // Alias para retrocompatibilidad con el código existente
+  // Alias para retrocompatibilidad completa con tu código anterior
+  bg: "#F9F6F0",
   line: "rgba(26, 24, 21, 0.08)",
   ink: "#1A1815",
   surface: "#FFFFFF",
