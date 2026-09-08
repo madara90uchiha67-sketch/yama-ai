@@ -817,7 +817,7 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
             rel="noopener noreferrer"
             style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.surface, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none", boxSizing: "border-box" }}
           >
-            <FeedbackIcon size={14} /> Enviar feedback
+            <MessageCircle size={14} /> Enviar feedback
           </a>
           <button onClick={onLogout} style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.surface, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
             <LogOut size={14} /> Cerrar sesión
