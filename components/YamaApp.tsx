@@ -8,56 +8,23 @@ import {
   Loader2, Settings, X, LogOut, Crown, Flame, MessageCircle as FeedbackIcon,
 } from "lucide-react";
 
-// Paleta única, unificada: beige / negro / blanco con acento metálico.
-const COLORS = {
-  bg: "transparent", // las pantallas dejan ver las olas de fondo detrás
-  surface: "#FFFBF3",
-  line: "#E4D8C3",
-  ink: "#241F18",
-  muted: "#8C7F68",
-  metallic: "linear-gradient(135deg, #E8D9B5, #FFF6E0, #C9AF7E)",
+export const COLORS = {
+  bgPrimary: "#F9F6F0",       // Beige cálido refinado
+  bgSecondary: "#F0EAE1",     // Elevación sutil para tarjetas y modales
+  bgElevated: "#FFFFFF",      // Blanco puro para destacar el contenido
+  
+  accentPrimary: "#1A1815",   // Negro carbón profundo
+  accentSecondary: "#8C8275", // Gris topo/metálico
+  accentWarm: "#D9A05B",      // Ámbar metálico para seleccionados/detalles
+  
+  textPrimary: "#1A1815",     // Máximo contraste y legibilidad
+  textSecondary: "#655E53",   // Descripciones y texto secundario
+  textMuted: "#A39B8E",       // Placeholders e íconos inactivos
+
+  borderLight: "rgba(26, 24, 21, 0.08)",
+  borderFocus: "rgba(217, 160, 91, 0.4)",
+  shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
 };
-const sansFont = "'Inter', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-const serifFont = "'Iowan Old Style', Georgia, ui-serif, serif";
-
-function stripForSpeech(text: string) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, "$1").replace(/\*(.*?)\*/g, "$1").replace(/_(.*?)_/g, "$1")
-    .replace(/`{1,3}(.*?)`{1,3}/g, "$1").replace(/^#{1,6}\s+/gm, "").replace(/^[-•]\s+/gm, "")
-    .replace(/[*_#`~]/g, "").trim();
-}
-
-/* Fondo de olas: 3 capas fijas, superpuestas, presencia media, sin movimiento */
-function WaveBackground() {
-  return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden", background: "#FFFFFF" }} aria-hidden="true">
-      <svg
-        viewBox="0 0 400 900"
-        preserveAspectRatio="none"
-        style={{ width: "100%", height: "100%" }}
-      >
-        {/* Ola 1: beige, la más grande, base */}
-        <path
-          d="M0,120 C90,180 130,60 220,110 C300,155 340,90 400,130 L400,900 L0,900 Z"
-          fill="#F6EEE0"
-          opacity="1"
-        />
-        {/* Ola 2: negro muy tenue, capa media */}
-        <path
-          d="M0,260 C100,320 160,220 240,270 C310,310 350,250 400,290 L400,900 L0,900 Z"
-          fill="#0A0A09"
-          opacity="0.05"
-        />
-        {/* Ola 3: blanco, capa superior, da profundidad */}
-        <path
-          d="M0,400 C110,470 170,370 250,420 C320,460 360,400 400,440 L400,900 L0,900 Z"
-          fill="#FFFFFF"
-          opacity="0.6"
-        />
-      </svg>
-    </div>
-  );
-}
 
 function CoreOrb({ size = 132, active = false }) {
   return (
