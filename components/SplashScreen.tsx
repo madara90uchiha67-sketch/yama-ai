@@ -1,14 +1,38 @@
 "use client";
+
 import React from "react";
 
-export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
+interface SplashScreenProps {
+  onFinish?: () => void;
+}
+
+export default function SplashScreen({ onFinish }: SplashScreenProps) {
   return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "#000000",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999,
+      }}
+    >
       <video
-        src="/lv_0_20260907220958.mp4"        autoPlay
+        src="/lv_0_20260907220958.mp4"
+        autoPlay
         muted
         playsInline
         onEnded={onFinish}
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        style={{
+          maxWidth: "100%",
+          maxHeight: "100%",
+          objectFit: "contain",
+        }}
       />
     </div>
   );
