@@ -3,10 +3,8 @@ import React from "react";
 
 export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
   return (
-    
       <video
-        src="Logo.mp4"
-        autoPlay
+        src="/lv_0_20260907220958.mp4"        autoPlay
         muted
         playsInline
         onEnded={onFinish}
