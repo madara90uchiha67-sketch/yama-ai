@@ -44,7 +44,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
         left: 0,
         width: "100vw",
         height: "100vh",
-        backgroundColor: "#000000", // Mantiene el fondo completamente negro
+        backgroundColor: "#000000",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -53,13 +53,12 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
     >
       <div
         style={{
-          width: "80%",
-          maxWidth: "280px",
-          maxHeight: "280px",
+          width: "50%",
+          maxWidth: "150px", // Reducido a 150px para un tamaño compacto y minimalista
+          maxHeight: "150px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          // Oculta el contenedor hasta que el video esté listo para evitar la pantalla negra inicial
           opacity: isReady ? 1 : 0,
           transition: "opacity 0.2s ease-in-out",
         }}
@@ -75,8 +74,8 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
             width: "100%",
             height: "100%",
             objectFit: "contain",
-            borderRadius: "12px",
-            backgroundColor: "#000000", // Previene destellos blancos
+            borderRadius: "8px",
+            backgroundColor: "#000000",
             transform: "translate3d(0, 0, 0)",
             backfaceVisibility: "hidden",
           }}
