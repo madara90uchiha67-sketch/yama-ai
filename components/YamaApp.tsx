@@ -46,28 +46,28 @@ const stripForSpeech = (text: string): string => {
 
 // 3. Objeto base de colores
 const BASE_COLORS: Record<string, string> = {
-  bgPrimary: "#F9F6F0",
-  bgSecondary: "#F0EAE1",
-  bgElevated: "#FFFFFF",
-  accentPrimary: "#1A1815",
-  accentSecondary: "#8C8275",
-  accentWarm: "#D9A05B",
-  textPrimary: "#1A1815",
-  textSecondary: "#655E53",
-  textMuted: "#A39B8E",
-  borderLight: "rgba(26, 24, 21, 0.08)",
-  borderFocus: "rgba(217, 160, 91, 0.4)",
-  shadowSoft: "0 10px 30px -5px rgba(26, 24, 21, 0.05)",
+  bgPrimary: "#000000",
+  bgSecondary: "#0A0A0A",
+  bgElevated: "#141414",
+  accentPrimary: "#FFFFFF",
+  accentSecondary: "#8A8A8A",
+  accentWarm: "#C9C9C9",
+  textPrimary: "#FFFFFF",
+  textSecondary: "#B0B0B0",
+  textMuted: "#7A7A7A",
+  borderLight: "rgba(255,255,255,0.10)",
+  borderFocus: "rgba(255,255,255,0.35)",
+  shadowSoft: "0 10px 30px -5px rgba(0,0,0,0.6)",
 
   // Mapeo retrocompatible
-  bg: "#F9F6F0",
-  line: "rgba(26, 24, 21, 0.08)",
-  ink: "#1A1815",
-  surface: "#FFFFFF",
-  muted: "#A39B8E",
-  paper: "#F9F6F0",
-  metallic: "#8C8275",
-  gold: "#D9A05B",
+  bg: "#000000",
+  line: "rgba(255,255,255,0.12)",
+  ink: "#FFFFFF",
+  surface: "#141414",
+  muted: "#8A8A8A",
+  paper: "#000000",
+  metallic: "#1C1C1C",
+  gold: "#D9D9D9",
 };
 
 // 4. Proxy de protección
