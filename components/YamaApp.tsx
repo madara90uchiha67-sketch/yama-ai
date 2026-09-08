@@ -316,7 +316,7 @@ function HistoryModal({ open, onClose, onSelectConversation }: any) {
 /* ---------------- HOME ---------------- */
 function HomeView({ setView, setChatMode, memory, plan, onUpgrade, onOpenSettings }: any) {
   const options = [
-    { id: "content", icon: PenSquare, title: "Crear contenido", desc: "Guiones, ideas, edición y estrategia.", go: () => { setChatMode("content"); setView("chat"); } },
+    { id: "content", icon: SquarePen, title: "Crear contenido", desc: "Guiones, ideas, edición y estrategia.", go: () => { setChatMode("content"); setView("chat"); } },
     { id: "strategy", icon: TrendingUp, title: "Estrategia", desc: "Marketing, crecimiento y negocios.", go: () => setView("strategist") },
     { id: "idea", icon: Lightbulb, title: "Ideas", desc: "Generación de oportunidades y conceptos.", go: () => { setChatMode("idea"); setView("chat"); } },
     { id: "challenge", icon: Flame, title: "Reto diario", desc: "20 sugerencias para mejorar hoy.", go: () => setView("challenges") },
