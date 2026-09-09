@@ -25,7 +25,6 @@ export async function POST(req: Request) {
   });
   if (!user) return NextResponse.json({ error: "Usuario no encontrado." }, { status: 404 });
 
-  // --- Control de uso diario (evita costos descontrolados) ---
   const limits = PLAN_LIMITS[user.plan];
   const date = todayKey();
   const usage = await prisma.usageLog.upsert({
@@ -52,7 +51,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Falta el mensaje." }, { status: 400 });
   }
 
-  // Recupera o crea la conversación
   let conversation = conversationId
     ? await prisma.conversation.findFirst({
         where: { id: conversationId, userId },
@@ -85,34 +83,23 @@ export async function POST(req: Request) {
       maxTokens: limits.maxTokensPerReply,
     });
   } catch (e) {
-    console.error("YAMA AI /api/chat — fallo llamando a Gemini:", e);
+    // El detalle técnico solo se registra en el servidor — nunca llega al usuario.
+    console.error("YAMA AI /api/chat — fallo interno:", e);
     return NextResponse.json(
-      { error: "Falló la IA. Intenta de nuevo.", debug: String(e) },
+      { error: "YAMA está algo saturada en este momento. Intenta de nuevo en unos segundos." },
       { status: 502 }
     );
   }
 
   await prisma.$transaction([
-    prisma.message.create({
-      data: { conversationId: conversation.id, role: "user", content },
-    }),
-    prisma.message.create({
-      data: { conversationId: conversation.id, role: "assistant", content: reply },
-    }),
-    prisma.usageLog.update({
-      where: { userId_date: { userId, date } },
-      data: { messageCount: { increment: 1 } },
-    }),
+    prisma.message.create({ data: { conversationId: conversation.id, role: "user", content } }),
+    prisma.message.create({ data: { conversationId: conversation.id, role: "assistant", content: reply } }),
+    prisma.usageLog.update({ where: { userId_date: { userId, date } }, data: { messageCount: { increment: 1 } } }),
   ]);
 
-  // --- Memoria automática (no cuenta como "mensaje" del plan) ---
   extractMemory(content)
     .then((fact) => {
-      if (fact) {
-        return prisma.memoryNote.create({
-          data: { userId, content: fact },
-        });
-      }
+      if (fact) return prisma.memoryNote.create({ data: { userId, content: fact } });
     })
     .catch((e) => console.error("YAMA AI — fallo guardando memoria automática:", e));
 
