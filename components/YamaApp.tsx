@@ -76,6 +76,7 @@ export const COLORS: any = new Proxy(BASE_COLORS, {
     if (prop in target) return target[prop];
     return "#1A1815";
   }
+});
 
   function CoreOrb({ size = 132, active = false }: { size?: number; active?: boolean }) {
   return (
