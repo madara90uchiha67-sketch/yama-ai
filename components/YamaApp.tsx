@@ -460,7 +460,7 @@ function ChatView({ chatMode, plan, initialMessage, onInitialMessageSent, loadCo
       });
       const data = await res.json();
       if (!res.ok) {
-        setError((data.error || "Ocurrió un error.") + (data.debug ? " — " + data.debug : ""));
+        setError(data.error || "Ocurrió un error.");
         setMessages((m) => m.slice(0, -1));
         return;
       }
