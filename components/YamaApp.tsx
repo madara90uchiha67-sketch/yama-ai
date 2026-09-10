@@ -30,11 +30,9 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-// 1. Fuentes globales
 const sansFont = 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 const serifFont = '"Iowan Old Style", "Apple Garamond", "Baskerville", serif';
 
-// 2. Función auxiliar para lectura por voz
 const stripForSpeech = (text: string): string => {
   if (!text) return "";
   return text
@@ -44,7 +42,6 @@ const stripForSpeech = (text: string): string => {
     .trim();
 };
 
-// 3. Objeto base de colores
 const BASE_COLORS: Record<string, string> = {
   bgPrimary: "#000000",
   bgSecondary: "#0A0A0A",
@@ -59,7 +56,6 @@ const BASE_COLORS: Record<string, string> = {
   borderFocus: "rgba(255,255,255,0.35)",
   shadowSoft: "0 10px 30px -5px rgba(0,0,0,0.6)",
 
-  // Mapeo retrocompatible
   bg: "#000000",
   line: "rgba(255,255,255,0.12)",
   ink: "#FFFFFF",
@@ -70,7 +66,6 @@ const BASE_COLORS: Record<string, string> = {
   gold: "#D9D9D9",
 };
 
-// 4. Proxy de protección
 export const COLORS: any = new Proxy(BASE_COLORS, {
   get: (target, prop: string) => {
     if (prop in target) return target[prop];
@@ -78,7 +73,7 @@ export const COLORS: any = new Proxy(BASE_COLORS, {
   }
 });
 
-  function CoreOrb({ size = 132, active = false }: { size?: number; active?: boolean }) {
+function CoreOrb({ size = 132, active = false }: { size?: number; active?: boolean }) {
   return (
     <div style={{ width: size, height: size, position: "relative" }} aria-hidden="true">
       <style>{`
@@ -86,8 +81,8 @@ export const COLORS: any = new Proxy(BASE_COLORS, {
         @keyframes yama-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes yama-pulse { 0%,100% { opacity: .55; } 50% { opacity: .9; } }
       `}</style>
-      <div style={{ position: "absolute", inset: -18, borderRadius: "50%", background: "radial-gradient(circle, rgba(17,17,17,0.10) 0%, rgba(17,17,17,0) 70%)", animation: `yama-pulse ${active ? 1.6 : 3.6}s ease-in-out infinite` }} />
-      <div style={{ position: "absolute", inset: -8, borderRadius: "50%", border: "1px solid rgba(17,17,17,0.14)", animation: `yama-rotate ${active ? 10 : 22}s linear infinite`, borderTopColor: "rgba(17,17,17,0.35)" }} />
+      <div style={{ position: "absolute", inset: -18, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%)", animation: `yama-pulse ${active ? 1.6 : 3.6}s ease-in-out infinite` }} />
+      <div style={{ position: "absolute", inset: -8, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.25)", animation: `yama-rotate ${active ? 10 : 22}s linear infinite`, borderTopColor: "rgba(255,255,255,0.6)" }} />
       <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "radial-gradient(circle at 32% 28%, #4a4a48 0%, #17171666 38%, #0c0c0b 72%)", boxShadow: "inset -10px -14px 26px rgba(255,255,255,0.06), inset 8px 10px 22px rgba(0,0,0,0.55), 0 18px 30px rgba(17,17,17,0.18)", animation: `yama-breathe ${active ? 1.4 : 4.2}s ease-in-out infinite` }} />
     </div>
   );
@@ -155,7 +150,7 @@ function SettingsModal({ open, onClose, children }: any) {
   if (!open) return null;
   return (
     <div
-      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", justifyContent: "flex-end", background: "rgba(36,31,24,0.35)", animation: "yama-modal-backdrop-in 0.25s ease" }}
+      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", justifyContent: "flex-end", background: "rgba(0,0,0,0.55)", animation: "yama-modal-backdrop-in 0.25s ease" }}
       onClick={onClose}
     >
       <style>{`
@@ -165,14 +160,14 @@ function SettingsModal({ open, onClose, children }: any) {
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "#FFFBF3",
+          background: "#0A0A0A",
           width: "min(420px, 92vw)",
           height: "100%",
           overflowY: "auto",
           animation: "yama-panel-in-right 0.3s cubic-bezier(0.16,1,0.3,1)",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "-8px 0 30px rgba(36,31,24,0.15)",
+          boxShadow: "-8px 0 30px rgba(0,0,0,0.5)",
         }}
       >
         <div style={{ display: "flex", justifyContent: "flex-end", padding: "14px 14px 0" }}>
@@ -217,12 +212,12 @@ function HistoryModal({ open, onClose, onSelectConversation }: any) {
 
   return (
     <div
-      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-end", background: "rgba(36,31,24,0.35)", animation: "yama-modal-backdrop-in 0.25s ease" }}
+      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-end", background: "rgba(0,0,0,0.55)", animation: "yama-modal-backdrop-in 0.25s ease" }}
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ background: "#F6EEE0", width: "100%", maxHeight: "80vh", borderRadius: "24px 24px 0 0", overflowY: "auto", animation: "yama-modal-sheet-in 0.3s cubic-bezier(0.16,1,0.3,1)", display: "flex", flexDirection: "column" }}
+        style={{ background: "#0A0A0A", width: "100%", maxHeight: "80vh", borderRadius: "24px 24px 0 0", overflowY: "auto", animation: "yama-modal-sheet-in 0.3s cubic-bezier(0.16,1,0.3,1)", display: "flex", flexDirection: "column" }}
       >
         <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 0" }}>
           <div style={{ width: 36, height: 4, borderRadius: 2, background: COLORS.line }} />
