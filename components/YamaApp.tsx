@@ -77,13 +77,42 @@ function CoreOrb({ size = 132, active = false }: { size?: number; active?: boole
   return (
     <div style={{ width: size, height: size, position: "relative" }} aria-hidden="true">
       <style>{`
-        @keyframes yama-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+        @keyframes yama-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
         @keyframes yama-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes yama-pulse { 0%,100% { opacity: .55; } 50% { opacity: .9; } }
       `}</style>
-      <div style={{ position: "absolute", inset: -18, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 70%)", animation: `yama-pulse ${active ? 1.6 : 3.6}s ease-in-out infinite` }} />
-      <div style={{ position: "absolute", inset: -8, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.25)", animation: `yama-rotate ${active ? 10 : 22}s linear infinite`, borderTopColor: "rgba(255,255,255,0.6)" }} />
-      <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "radial-gradient(circle at 32% 28%, #4a4a48 0%, #17171666 38%, #0c0c0b 72%)", boxShadow: "inset -10px -14px 26px rgba(255,255,255,0.06), inset 8px 10px 22px rgba(0,0,0,0.55), 0 18px 30px rgba(17,17,17,0.18)", animation: `yama-breathe ${active ? 1.4 : 4.2}s ease-in-out infinite` }} />
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 200 200"
+        style={{ position: "absolute", inset: 0, animation: `yama-breathe ${active ? 1.4 : 4.2}s ease-in-out infinite` }}
+      >
+        <defs>
+          <radialGradient id="yama-halo-ring" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#000000" stopOpacity="0" />
+            <stop offset="52%" stopColor="#000000" stopOpacity="0" />
+            <stop offset="58%" stopColor="#FFFFFF" stopOpacity="0.95" />
+            <stop offset="68%" stopColor="#F2F2F2" stopOpacity="0.85" />
+            <stop offset="82%" stopColor="#FFFFFF" stopOpacity="0.30" />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id="yama-sphere-core" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stopColor="#5A5A58" />
+            <stop offset="35%" stopColor="#232321" />
+            <stop offset="70%" stopColor="#0A0A09" />
+            <stop offset="100%" stopColor="#000000" />
+          </radialGradient>
+        </defs>
+        <circle cx="100" cy="100" r="100" fill="url(#yama-halo-ring)" />
+        <circle cx="100" cy="100" r="56" fill="url(#yama-sphere-core)" />
+      </svg>
+      <div
+        style={{
+          position: "absolute", inset: -6, borderRadius: "50%",
+          border: "1px solid rgba(255,255,255,0.35)",
+          animation: `yama-rotate ${active ? 10 : 22}s linear infinite`,
+          borderTopColor: "rgba(255,255,255,0.8)",
+        }}
+      />
     </div>
   );
 }
