@@ -680,3 +680,227 @@ function StrategistView() {
     </div>
   );
 }
+
+/* ---------------- PANEL / CONFIG ---------------- */
+function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, onLogout }: any) {
+  const [profanityLevel, setProfanityLevel] = useState(memory?.profanityLevel || "none");
+  const [personality, setPersonality] = useState(memory?.personality || "");
+  const [speakingStyle, setSpeakingStyle] = useState(memory?.speakingStyle || "");
+  const [userProfile, setUserProfile] = useState(memory?.userProfile || "");
+  const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    setProfanityLevel(memory?.profanityLevel || "none");
+    setPersonality(memory?.personality || ""); setSpeakingStyle(memory?.speakingStyle || ""); setUserProfile(memory?.userProfile || "");
+  }, [memory]);
+
+  const patchSettings = async (body: any) => {
+    const res = await fetch("/api/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) { setNotice(data.error); return; }
+    setNotice("");
+    refreshMemory();
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: "auto" }}>
+      <TopBar title="Configuración" subtitle={memory?.brand || "Tus preferencias"} />
+      <div style={{ padding: "0 18px 28px", fontFamily: sansFont }}>
+        {plan === "FREE" && (
+          <button onClick={onUpgrade} style={{ width: "100%", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, border: "none", background: COLORS.ink, color: "#000000", borderRadius: 12, padding: "12px 16px", fontSize: 13.5, cursor: "pointer" }}>
+            <Crown size={14} /> Mejorar a Pro — más mensajes y memoria
+          </button>
+        )}
+        {notice && <div style={{ color: "#FF9E86", fontSize: 12.5, marginBottom: 10 }}>{notice}</div>}
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Personalidad de YAMA</div>
+          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>¿Cómo quieres que te hable?</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+            {[["profesional", "Profesional"], ["directa", "Directa"], ["creativa", "Creativa"], ["mentor", "Mentor"], ["casual", "Casual"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setPersonality(val); patchSettings({ personality: val }); }}
+                style={{ border: `1px solid ${personality === val ? COLORS.ink : COLORS.line}`, background: personality === val ? COLORS.ink : COLORS.surface, color: personality === val ? "#000000" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>Forma de hablar</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+            {[["formal", "Formal"], ["casual", "Casual"], ["personalizada", "Personalizada"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setSpeakingStyle(val); patchSettings({ speakingStyle: val }); }}
+                style={{ border: `1px solid ${speakingStyle === val ? COLORS.ink : COLORS.line}`, background: speakingStyle === val ? COLORS.ink : COLORS.surface, color: speakingStyle === val ? "#000000" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: COLORS.muted, marginBottom: 6 }}>¿Para qué usas YAMA?</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {[["creador", "Creador de contenido"], ["emprendedor", "Emprendedor"], ["marca", "Dueño de marca"], ["freelancer", "Freelancer"], ["estudiante", "Estudiante"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setUserProfile(val); patchSettings({ userProfile: val }); }}
+                style={{ border: `1px solid ${userProfile === val ? COLORS.ink : COLORS.line}`, background: userProfile === val ? COLORS.ink : COLORS.surface, color: userProfile === val ? "#000000" : COLORS.ink, borderRadius: 16, padding: "6px 12px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 3, color: COLORS.ink }}>Nivel de lenguaje</div>
+          <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 10 }}>Qué tan crudo puede hablar YAMA en ganchos y contenido.</div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {[["none", "Ninguno"], ["soft", "Suave"], ["medium", "Medio"], ["high", "Alto"]].map(([val, label]) => (
+              <button key={val} onClick={() => { setProfanityLevel(val); patchSettings({ profanityLevel: val }); }}
+                style={{ flex: 1, border: `1px solid ${profanityLevel === val ? COLORS.ink : COLORS.line}`, background: profanityLevel === val ? COLORS.ink : COLORS.surface, color: profanityLevel === val ? "#000000" : COLORS.ink, borderRadius: 10, padding: "8px 6px", fontSize: 12, cursor: "pointer" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Cuenta</div>
+          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
+          <a
+            href="https://wa.me/573505643381?text=Hola%2C%20quiero%20reportar%20algo%20sobre%20YAMA%20AI%3A%20"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.surface, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, textDecoration: "none", boxSizing: "border-box" }}
+          >
+            <MessageCircle size={14} /> Enviar feedback
+          </a>
+          <button onClick={onLogout} style={{ width: "100%", marginBottom: 10, border: `1px solid ${COLORS.line}`, background: COLORS.surface, color: COLORS.ink, borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <LogOut size={14} /> Cerrar sesión
+          </button>
+          <button onClick={onDeleteAccount} style={{ width: "100%", border: `1px solid #E0B4AC`, background: "#3A1F1A", color: "#FF9E86", borderRadius: 10, padding: "10px 12px", fontSize: 13, cursor: "pointer" }}>
+            Eliminar cuenta permanentemente
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- ROOT ---------------- */
+export default function YamaApp() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  useEffect(() => {
+    if ((window as any).Paddle) return;
+    const script = document.createElement("script");
+    script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+    script.onload = () => {
+      (window as any).Paddle.Environment.set("sandbox");
+      (window as any).Paddle.Initialize({ token: process.env.NEXT_PUBLIC_PADDLE_TOKEN });
+    };
+    document.body.appendChild(script);
+  }, []);
+  const [view, setView] = useState("home");
+  const [chatMode, setChatMode] = useState("free");
+  const [memory, setMemory] = useState<any>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [loadConversationId, setLoadConversationId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "unauthenticated") router.push("/login");
+  }, [status, router]);
+
+  const refreshMemory = useCallback(async () => {
+    const res = await fetch("/api/memory");
+    if (res.ok) setMemory(await res.json());
+  }, []);
+
+  useEffect(() => { if (status === "authenticated") refreshMemory(); }, [status, refreshMemory]);
+
+  const upgrade = () => {
+    const paddle = (window as any).Paddle;
+    if (!paddle) {
+      alert("El sistema de pagos todavía está cargando, intenta de nuevo en un segundo.");
+      return;
+    }
+    paddle.Checkout.open({
+      items: [{ priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_ID, quantity: 1 }],
+      customer: { email: session?.user?.email || undefined },
+      customData: { userId: (session?.user as any)?.id },
+    });
+  };
+
+  const deleteAccount = async () => {
+    if (!confirm("¿Seguro que quieres eliminar tu cuenta? Esta acción es permanente y no se puede deshacer.")) return;
+    const res = await fetch("/api/account/delete", { method: "DELETE" });
+    if (res.ok) {
+      await signOut({ callbackUrl: "/login" });
+    } else {
+      alert("No se pudo eliminar la cuenta. Intenta de nuevo.");
+    }
+  };
+
+  const goToChatWithMessage = (message: string) => {
+    setChatMode("free");
+    setPendingChatMessage(message);
+    setView("chat");
+  };
+
+  if (status === "loading" || !memory) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#000000", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <CoreOrb size={48} active />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ fontFamily: serifFont, color: COLORS.ink, minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", background: "#000000" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, position: "relative", zIndex: 1 }}>
+        {view === "home" && (
+          <HomeView
+            setView={setView}
+            setChatMode={setChatMode}
+            memory={memory}
+            plan={memory.plan}
+            onUpgrade={upgrade}
+            onOpenSettings={() => setSettingsOpen(true)}
+          />
+        )}
+        {view === "chat" && (
+          <ChatView
+            chatMode={chatMode}
+            plan={memory.plan}
+            initialMessage={pendingChatMessage}
+            onInitialMessageSent={() => setPendingChatMessage(null)}
+            loadConversationId={loadConversationId}
+            onConversationLoaded={() => setLoadConversationId(null)}
+            onOpenHistory={() => setHistoryOpen(true)}
+          />
+        )}
+        {view === "strategist" && <StrategistView />}
+        {view === "challenges" && <DailyChallengesView onSelect={goToChatWithMessage} />}
+      </div>
+      <div style={{ position: "relative", zIndex: 1 }}>
+        <BottomNav view={view} setView={setView} />
+      </div>
+
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)}>
+        <PanelView
+          memory={memory}
+          refreshMemory={refreshMemory}
+          plan={memory.plan}
+          onUpgrade={upgrade}
+          onDeleteAccount={deleteAccount}
+          onLogout={() => signOut({ callbackUrl: "/login" })}
+        />
+      </SettingsModal>
+
+      <HistoryModal
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        onSelectConversation={(id: string) => {
+          setLoadConversationId(id);
+          setHistoryOpen(false);
+          setView("chat");
+        }}
+      />
+    </div>
+  );
+}
