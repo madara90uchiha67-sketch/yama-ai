@@ -75,43 +75,20 @@ export const COLORS: any = new Proxy(BASE_COLORS, {
 
 function CoreOrb({ size = 132, active = false }: { size?: number; active?: boolean }) {
   return (
-    <div style={{ width: size, height: size, position: "relative" }} aria-hidden="true">
+    <div
+      style={{
+        width: size, height: size, position: "relative",
+        animation: `yama-breathe ${active ? 1.4 : 4.2}s ease-in-out infinite`,
+      }}
+      aria-hidden="true"
+    >
       <style>{`
         @keyframes yama-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
-        @keyframes yama-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 200 200"
-        style={{ position: "absolute", inset: 0, animation: `yama-breathe ${active ? 1.4 : 4.2}s ease-in-out infinite` }}
-      >
-        <defs>
-          <radialGradient id="yama-halo-ring" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#000000" stopOpacity="0" />
-            <stop offset="52%" stopColor="#000000" stopOpacity="0" />
-            <stop offset="58%" stopColor="#FFFFFF" stopOpacity="0.95" />
-            <stop offset="68%" stopColor="#F2F2F2" stopOpacity="0.85" />
-            <stop offset="82%" stopColor="#FFFFFF" stopOpacity="0.30" />
-            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id="yama-sphere-core" cx="35%" cy="30%" r="75%">
-            <stop offset="0%" stopColor="#5A5A58" />
-            <stop offset="35%" stopColor="#232321" />
-            <stop offset="70%" stopColor="#0A0A09" />
-            <stop offset="100%" stopColor="#000000" />
-          </radialGradient>
-        </defs>
-        <circle cx="100" cy="100" r="100" fill="url(#yama-halo-ring)" />
-        <circle cx="100" cy="100" r="56" fill="url(#yama-sphere-core)" />
-      </svg>
-      <div
-        style={{
-          position: "absolute", inset: -6, borderRadius: "50%",
-          border: "1px solid rgba(255,255,255,0.35)",
-          animation: `yama-rotate ${active ? 10 : 22}s linear infinite`,
-          borderTopColor: "rgba(255,255,255,0.8)",
-        }}
+      <img
+        src="/1789104090163.jpg"
+        alt="YAMA"
+        style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
       />
     </div>
   );
