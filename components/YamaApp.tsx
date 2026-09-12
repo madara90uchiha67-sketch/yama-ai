@@ -709,7 +709,7 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
   };
 
   return (
-    <jsx. style={{ flex: 1, overflowY: "auto" }}>
+    <div style={{ flex: 1, overflowY: "auto" }}>
       <TopBar title="Configuración" subtitle={memory?.brand || "Tus preferencias"} />
       <div style={{ padding: "0 18px 28px", fontFamily: sansFont }}>
         {plan === "FREE" && (
@@ -761,11 +761,9 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
               </button>
             ))}
           </div>
-        </jsx>
-        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
-          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Cuenta</div>
-          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
-          <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
+        </div>
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
           <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Legal</div>
           {[
             { label: "Términos y condiciones", href: "/legal/terminos" },
@@ -787,6 +785,11 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
             </a>
           ))}
         </div>
+
+        <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Cuenta</div>
+          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
+          <a
             href="https://wa.me/573505643381?text=Hola%2C%20quiero%20reportar%20algo%20sobre%20YAMA%20AI%3A%20"
             target="_blank"
             rel="noopener noreferrer"
