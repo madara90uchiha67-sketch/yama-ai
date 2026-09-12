@@ -766,7 +766,28 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
           <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Cuenta</div>
           <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
-          <a
+          <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16, marginBottom: 12 }}>
+          <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Legal</div>
+          {[
+            { label: "Términos y condiciones", href: "/legal/terminos" },
+            { label: "Política de privacidad", href: "/legal/privacidad" },
+            { label: "Política de cookies", href: "/legal/cookies" },
+          ].map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "10px 0", borderBottom: `1px solid ${COLORS.line}`,
+                color: COLORS.ink, textDecoration: "none", fontSize: 13.5, fontFamily: sansFont,
+              }}
+            >
+              {item.label} <span style={{ color: COLORS.muted }}>→</span>
+            </a>
+          ))}
+        </div>
             href="https://wa.me/573505643381?text=Hola%2C%20quiero%20reportar%20algo%20sobre%20YAMA%20AI%3A%20"
             target="_blank"
             rel="noopener noreferrer"
