@@ -709,9 +709,9 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
   };
 
   return (
-    <div style={{ flex: 1, overflowY: "auto" }}>
+    <jsx. style={{ flex: 1, overflowY: "auto" }}>
       <TopBar title="Configuración" subtitle={memory?.brand || "Tus preferencias"} />
-      <jsx. style={{ padding: "0 18px 28px", fontFamily: sansFont }}>
+      <div style={{ padding: "0 18px 28px", fontFamily: sansFont }}>
         {plan === "FREE" && (
           <button onClick={onUpgrade} style={{ width: "100%", marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, border: "none", background: COLORS.ink, color: "#000000", borderRadius: 12, padding: "12px 16px", fontSize: 13.5, cursor: "pointer" }}>
             <Crown size={14} /> Mejorar a Pro — más mensajes y memoria
