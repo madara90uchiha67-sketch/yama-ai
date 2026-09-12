@@ -709,7 +709,7 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
   };
 
   return (
-    <jsx. style={{ flex: 1, overflowY: "auto" }}>
+    <div style={{ flex: 1, overflowY: "auto" }}>
       <TopBar title="Configuración" subtitle={memory?.brand || "Tus preferencias"} />
       <jsx. style={{ padding: "0 18px 28px", fontFamily: sansFont }}>
         {plan === "FREE" && (
