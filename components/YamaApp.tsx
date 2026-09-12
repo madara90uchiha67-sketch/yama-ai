@@ -761,8 +761,7 @@ function PanelView({ memory, refreshMemory, plan, onUpgrade, onDeleteAccount, on
               </button>
             ))}
           </div>
-        </div>
-
+        </jsx>
         <div style={{ background: COLORS.surface, border: `1px solid ${COLORS.line}`, borderRadius: 16, padding: 16 }}>
           <div style={{ fontFamily: serifFont, fontSize: 15, marginBottom: 10, color: COLORS.ink }}>Cuenta</div>
           <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Plan actual: {plan === "FREE" ? "Gratuito" : "Pro"}</div>
