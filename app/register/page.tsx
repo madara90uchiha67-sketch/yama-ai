@@ -12,11 +12,16 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreed) {
+      setError("Debes aceptar los Términos y la Política de Privacidad para continuar.");
+      return;
+    }
     setLoading(true);
     setError("");
     const res = await fetch("/api/auth/register", {
@@ -47,6 +52,26 @@ export default function RegisterPage() {
           style={{ width: "100%", padding: "11px 13px", marginBottom: 10, borderRadius: 10, border: `1px solid ${COLORS.line}`, fontFamily: sansFont, fontSize: 14 }} />
         <input type="password" placeholder="Contraseña (mín. 8 caracteres)" value={password} onChange={(e) => setPassword(e.target.value)} required
           style={{ width: "100%", padding: "11px 13px", marginBottom: 14, borderRadius: 10, border: `1px solid ${COLORS.line}`, fontFamily: sansFont, fontSize: 14 }} />
+
+        <label style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 14, fontSize: 12.5, color: COLORS.muted, cursor: "pointer" }}>
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            style={{ marginTop: 2, flexShrink: 0 }}
+          />
+          <span>
+            Acepto los{" "}
+            <a href="/legal/terminos" target="_blank" rel="noopener noreferrer" style={{ color: COLORS.ink, textDecoration: "underline" }}>
+              Términos y Condiciones
+            </a>{" "}
+            y la{" "}
+            <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={{ color: COLORS.ink, textDecoration: "underline" }}>
+              Política de Privacidad
+            </a>
+          </span>
+        </label>
+
         {error && <div style={{ color: "#B4433A", fontSize: 12.5, marginBottom: 12 }}>{error}</div>}
         <button type="submit" disabled={loading}
           style={{ width: "100%", padding: 12, borderRadius: 10, border: "none", background: COLORS.ink, color: "#fff", fontFamily: sansFont, fontSize: 14, fontWeight: 600, cursor: "pointer", opacity: loading ? 0.6 : 1 }}>
